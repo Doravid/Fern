@@ -11,26 +11,28 @@ import {
 } from "@/components/ui/card";
 import ProjectCarousel from "@/components/ui/ProjectCarousel";
 import WebGLCanvas from "@/components/webgl";
+import Particles from "@/components/particles";
 
 export default function Home() {
   const [webglKey, setWebglKey] = useState<number>(0);
   const [isResizing, setIsResizing] = useState<boolean>(false);
 
-  // Handle window resize with debounce to reload WebGL after resizing stops
   useEffect(() => {
     let resizeTimer: NodeJS.Timeout;
 
     const handleResize = (): void => {
-      setIsResizing(true);
-
-      // Clear existing timer
-      clearTimeout(resizeTimer);
-
-      // Set new timer to reload WebGL after resizing stops
-      resizeTimer = setTimeout(() => {
+      if (window.innerWidth >= 1700) {
+        setIsResizing(true);
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          setIsResizing(false);
+          setWebglKey((prev: number) => prev + 1);
+        }, 250);
+      } else {
+        // For smaller screens, immediately clear any pending resize and ensure not in resizing state
+        clearTimeout(resizeTimer);
         setIsResizing(false);
-        setWebglKey((prev: number) => prev + 1); // Force WebGL component to remount
-      }, 250); // Wait 250ms after last resize event
+      }
     };
 
     window.addEventListener("resize", handleResize);
@@ -48,21 +50,17 @@ export default function Home() {
         <Card className="hidden min-[1700px]:flex flex-col items-center bg-white w-full col-span-2 col-start-1 overflow-hidden min-h-0">
           <div className="w-full flex flex-col items-center p-3 h-full min-h-0">
             <p className="text-xl sm:text-2xl md:text-3xl font-bold text-center break-words flex-shrink-0">
-              Cool Stuff
+              About Me!
             </p>
             <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
             <div className="flex-1 w-full overflow-hidden min-h-0 flex items-center justify-center">
-              <ProjectCarousel />
+              <Card>
+                <CardContent>Hello, I'm Fern!</CardContent>
+              </Card>
             </div>
             <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
-            <div className="flex-1 w-full overflow-hidden min-h-0">
-              {isResizing ? (
-                <div className="w-full h-full flex items-center justify-center text-gray-500">
-                  Resizing...
-                </div>
-              ) : (
-                <WebGLCanvas key={`left-${webglKey}`} />
-              )}
+            <div className="flex-1 w-full overflow-shown min-h-0 flex items-center justify-center">
+              <ProjectCarousel />
             </div>
           </div>
         </Card>
@@ -82,7 +80,13 @@ export default function Home() {
             </p>
             <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
             <div className="flex-1 w-full overflow-hidden min-h-0 flex items-center justify-center">
-              <ProjectCarousel />
+              {isResizing ? (
+                <div className="w-full h-full flex items-center justify-center text-gray-500">
+                  Resizing...
+                </div>
+              ) : (
+                <Particles />
+              )}
             </div>
             <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
             <div className="flex-1 w-full overflow-hidden min-h-0">
@@ -103,21 +107,17 @@ export default function Home() {
           <Card className="flex flex-col items-center bg-white w-full overflow-hidden min-h-[400px]">
             <div className="w-full flex flex-col items-center p-3 h-full min-h-0">
               <p className="text-xl sm:text-2xl md:text-3xl font-bold text-center break-words flex-shrink-0">
-                Cool Stuff
+                About Me!
               </p>
               <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
               <div className="flex-1 w-full overflow-hidden min-h-0 flex items-center justify-center">
-                <ProjectCarousel />
+                <Card>
+                  <CardContent>Hello, I'm Fern!</CardContent>
+                </Card>
               </div>
               <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
-              <div className="flex-1 w-full overflow-hidden min-h-0">
-                {isResizing ? (
-                  <div className="w-full h-full flex items-center justify-center text-gray-500">
-                    Resizing...
-                  </div>
-                ) : (
-                  <WebGLCanvas key={`mobile-left-${webglKey}`} />
-                )}
+              <div className="flex-1 w-full overflow-shown min-h-0 flex items-center justify-center">
+                <ProjectCarousel />
               </div>
             </div>
           </Card>
@@ -129,17 +129,23 @@ export default function Home() {
                 Cool Stuff
               </p>
               <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
-              <div className="flex-1 w-full overflow-hidden min-h-0 flex items-center justify-center">
-                <ProjectCarousel />
-              </div>
-              <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
-              <div className="flex-1 w-full overflow-hidden min-h-0">
+              <div className="flex-1 w-full overflow-visible min-h-0 flex items-center justify-center">
                 {isResizing ? (
                   <div className="w-full h-full flex items-center justify-center text-gray-500">
                     Resizing...
                   </div>
                 ) : (
-                  <WebGLCanvas key={`mobile-right-${webglKey}`} />
+                  <Particles />
+                )}
+              </div>
+              <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
+              <div className="flex-1 w-full overflow-visible min-h-0">
+                {isResizing ? (
+                  <div className="w-full h-full flex items-center justify-center text-gray-500">
+                    Resizing...
+                  </div>
+                ) : (
+                  <WebGLCanvas />
                 )}
               </div>
             </div>
@@ -148,7 +154,8 @@ export default function Home() {
       </main>
 
       {/* Footer - compact and positioned at bottom */}
-      <footer className="flex gap-4 sm:gap-6 flex-wrap items-center justify-center p-2 w-full flex-shrink-0">
+      {/* Footer - compact and positioned at bottom */}
+      <Card className="flex flex-row items-center justify-center gap-4 p-4 mt-4 bg-[#ff7a05]">
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4 text-sm"
           href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
@@ -179,7 +186,7 @@ export default function Home() {
           />
           My GitHub →
         </a>
-      </footer>
+      </Card>
     </div>
   );
 }

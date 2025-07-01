@@ -10,57 +10,59 @@ import {
 
 export default function ProjectCarousel() {
   return (
-    <Carousel className="w-full max-w-[28em]">
-      <CarouselContent>
-        <CarouselItem className="p-[30px]">
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://github.com/better-wpi-planner/Chrome-Extension"
-          >
+    <div className="w-full flex justify-center over overflow-shown">
+      <Carousel className="w-full max-w-full relative px-12 overflow-shown">
+        <CarouselContent className="ml-0 overflow-shown">
+          <CarouselItem className="p-4 sm:p-[30px] pl-4 sm:pl-[30px]">
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://github.com/better-wpi-planner/Chrome-Extension"
+            >
+              <ImageCard
+                className="shadow-none p-0 bg-main text-main-foreground w-full max-w-[26em] mx-auto"
+                caption="Fun Little Project to add Rate My Professor rating to my school class planner."
+                imageUrl="RateMyPlanner.png"
+              />
+            </a>
+          </CarouselItem>
+          <CarouselItem className="p-4 sm:p-[30px] pl-4 sm:pl-[30px]">
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://github.com/Doravid/RayBird"
+            >
+              <ImageCard
+                className="shadow-none p-0 bg-main text-main-foreground w-full max-w-[26em] mx-auto"
+                caption="Recreated (poorly) my favorite puzzle game, SnakeBird, in Raylib / Zig!"
+                imageUrl="RayBird.png"
+              />
+            </a>
+          </CarouselItem>
+          <CarouselItem className="p-4 sm:p-[30px] pl-4 sm:pl-[30px]">
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://github.com/PMKS-Web/PMKS-Refactor"
+            >
+              <ImageCard
+                className="shadow-none p-0 bg-main text-main-foreground w-full max-w-[26em] mx-auto"
+                caption="PMKS+ Pretty cool educational project I worked on for a while. Uses Angular 😔😔😔"
+                imageUrl="PMKS.jpg"
+              />
+            </a>
+          </CarouselItem>
+          <CarouselItem className="p-4 sm:p-[30px] pl-4 sm:pl-[30px]">
             <ImageCard
-              className="s shadow-none p-0 bg-main text-main-foreground w-[26em]"
-              caption="Fun Little Project to add Rate My Professor rating to my school class planner."
-              imageUrl="RateMyPlanner.png"
-            ></ImageCard>
-          </a>
-        </CarouselItem>
-        <CarouselItem className="p-[30px]">
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://github.com/Doravid/RayBird"
-          >
-            <ImageCard
-              className="s shadow-none p-0 bg-main text-main-foreground w-[26em]"
-              caption="Recreated (poorly) my favorite puzzle game, SnakeBird, in Raylib / Zig!"
-              imageUrl="RayBird.png"
-            ></ImageCard>
-          </a>
-        </CarouselItem>
-        <CarouselItem className="p-[30px] ">
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://github.com/PMKS-Web/PMKS-Refactor"
-          >
-            <ImageCard
-              className="s shadow-none p-0 bg-main text-main-foreground w-[26em] "
-              caption="PMKS+ Pretty cool educational project I worked on for a while. Uses Angular 😔😔😔"
-              imageUrl="PMKS.jpg"
-            ></ImageCard>
-          </a>
-        </CarouselItem>
-        <CarouselItem className="p-[30px]">
-          <ImageCard
-            className="s shadow-none p-0 bg-main text-main-foreground w-[26em] "
-            caption="I also Like 3D Modeling!"
-            imageUrl="Wallpaper.png"
-          ></ImageCard>
-        </CarouselItem>
-      </CarouselContent>
-      <CarouselPrevious />
-      <CarouselNext />
-    </Carousel>
+              className="shadow-none p-0 bg-main text-main-foreground w-full max-w-[26em] mx-auto"
+              caption="I also Like 3D Modeling!"
+              imageUrl="Wallpaper.png"
+            />
+          </CarouselItem>
+        </CarouselContent>
+        <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10" />
+        <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10" />
+      </Carousel>
+    </div>
   );
 }

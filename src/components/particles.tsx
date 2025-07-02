@@ -435,21 +435,25 @@ class Particle {
     gl.uniform1f(pointSizeUniformLocation, gl.canvas.width * this.radius); // Set point size for main particle
     gl.drawArrays(gl.POINTS, 0, 1);
   }
-  handleMouseForce() {
+  handleMouseForce(dt: number) {
+    // Pass delta time
     if (!isOnCanvas) return;
     const deltaX = this.position[0] - mouseX;
     const deltaY = this.position[1] - mouseY;
     const distanceSq = deltaX * deltaX + deltaY * deltaY;
     const distance = Math.sqrt(distanceSq);
     if (distance > this.radius * 10 || distance === 0) return;
+
     const scaleFactor = 1 / distance;
     const dirVec = scale(
       scaleFactor,
       normalize([deltaX, deltaY], false) as Vec2
     );
-    let mult = isMobile ? 10 : 1;
-    this.velocity[0] += dirVec[0] * 0.001 * mult;
-    this.velocity[1] += dirVec[1] * 0.001 * mult;
+
+    // Make force proportional to time, not frame rate
+    const forceStrength = 1; // Adjust this value
+    this.velocity[0] += dirVec[0] * forceStrength * dt;
+    this.velocity[1] += dirVec[1] * forceStrength * dt;
   }
 }
 
@@ -516,7 +520,7 @@ const Particles: React.FC = () => {
       p.handleWallCollisions();
       p.update(dt);
       p.render(gl, positionBuffer, colorBuffer, pointSizeUniformLocation);
-      p.handleMouseForce();
+      p.handleMouseForce(dt);
     }
 
     webglState.current.animationFrameId = requestAnimationFrame(renderLoop);

@@ -40,7 +40,7 @@ export default function WasmComponent({ width = 800, height = 600 }: WasmCompone
           },
           locateFile: (path: string) => {
             if (path.endsWith('.wasm')) {
-              return '/index.wasm';
+              return 'RayBird/index.wasm';
             }
             return path;
           }
@@ -48,7 +48,7 @@ export default function WasmComponent({ width = 800, height = 600 }: WasmCompone
 
         // Load the Emscripten-generated script
         script = document.createElement('script');
-        script.src = '/index.js';
+        script.src = 'RayBird/index.js';
         script.onload = () => {
           console.log('WASM script loaded');
         };

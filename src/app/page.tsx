@@ -12,6 +12,7 @@ import {
 import ProjectCarousel from "@/components/ui/ProjectCarousel";
 import WebGLCanvas from "@/components/webgl";
 import Particles from "@/components/particles";
+import WasmComponent from "@/components/wasmComponent";
 
 export default function Home() {
   const [webglKey, setWebglKey] = useState<number>(0);
@@ -66,10 +67,9 @@ export default function Home() {
         </Card>
 
         {/* Center div - appears first on tablet/mobile, middle on desktop */}
-        <div className="flex flex-col items-center bg-black w-full min-[1700px]:col-span-4 min-[1700px]:col-start-3 overflow-hidden min-h-[300px] max-h-screen">
-          <div className="w-full h-full bg-black flex items-center justify-center text-white text-xl min-h-[300px]">
-            * placeholder *
-          </div>
+        <div className="flex flex-col items-center w-full min-[1700px]:col-span-4 min-[1700px]:col-start-3 overflow-shown min-h-[300px]">
+            WASM
+            <WasmComponent></WasmComponent>
         </div>
 
         {/* Right Card - desktop version, hidden on tablet/mobile */}

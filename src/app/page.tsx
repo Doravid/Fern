@@ -55,9 +55,8 @@ export default function Home() {
             </p>
             <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
             <div className="flex-1 w-full overflow-hidden min-h-0 flex items-center justify-center">
-              <Card>
-                <CardContent>Hello, I'm Fern!</CardContent>
-              </Card>
+              <WasmComponent></WasmComponent>
+
             </div>
             <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
             <div className="flex-1 w-full overflow-shown min-h-0 flex items-center justify-center">
@@ -68,8 +67,10 @@ export default function Home() {
 
         {/* Center div - appears first on tablet/mobile, middle on desktop */}
         <div className="flex flex-col items-center w-full min-[1700px]:col-span-4 min-[1700px]:col-start-3 overflow-shown min-h-[300px]">
-            WASM
-            <WasmComponent></WasmComponent>
+            
+              <Card>
+                <CardContent>Hello, I'm Fern!</CardContent>
+              </Card>
         </div>
 
         {/* Right Card - desktop version, hidden on tablet/mobile */}

@@ -734,6 +734,8 @@ const WebGLCanvas: React.FC = () => {
         background: "#000",
         borderRadius: "15px",
         boxShadow: "0 8px 16px rgba(0, 0, 0, 0.4)",
+        touchAction: "none",
+        userSelect: "none",
       }}
     >
       Your browser does not support the HTML5 Canvas element.

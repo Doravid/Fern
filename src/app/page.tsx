@@ -51,12 +51,11 @@ export default function Home() {
         <Card className="hidden min-[1700px]:flex flex-col items-center bg-white w-full col-span-2 col-start-1 overflow-hidden min-h-0">
           <div className="w-full flex flex-col items-center p-3 h-full min-h-0">
             <p className="text-xl sm:text-2xl md:text-3xl font-bold text-center break-words flex-shrink-0">
-              About Me!
+              Cool Stuff!
             </p>
             <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
             <div className="flex-1 w-full overflow-hidden min-h-0 flex items-center justify-center">
-              <WasmComponent></WasmComponent>
-
+              stuff
             </div>
             <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
             <div className="flex-1 w-full overflow-shown min-h-0 flex items-center justify-center">
@@ -64,25 +63,34 @@ export default function Home() {
             </div>
           </div>
         </Card>
-
-        {/* Center div - appears first on tablet/mobile, middle on desktop */}
-        <div className="flex flex-col items-center w-full min-[1700px]:col-span-4 min-[1700px]:col-start-3 overflow-shown min-h-[300px]">
-            
-              <Card>
-                <CardContent>Hello, I'm Fern!</CardContent>
-              </Card>
-        </div>
-
-        {/* Right Card - desktop version, hidden on tablet/mobile */}
-        <Card className="hidden min-[1700px]:flex flex-col items-center bg-white w-full col-span-2 col-start-7 overflow-hidden min-h-0">
+        {/* Middle Card */}
+        <Card className="hidden min-[1700px]:flex flex-col items-center bg-[#ffca95] w-full col-span-4 col-start-3 overflow-hidden min-h-0">
           <div className="w-full flex flex-col items-center p-3 h-full min-h-0">
             <p className="text-xl sm:text-2xl md:text-3xl font-bold text-center break-words flex-shrink-0">
-              Cool Stuff
+              About Me!
             </p>
             <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
             <div className="flex-1 w-full overflow-hidden min-h-0 flex items-center justify-center">
+              Hello! I'm Fern
+            </div>
+            <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
+            <div className="flex-1 w-full min-h-0 flex items-center justify-center">
+              <WasmComponent />
+            </div>
+            Press F to play in fullscreen!
+          </div>
+        </Card>
+
+        {/* Right Card - desktop version, hidden on tablet/mobile */}
+        <Card className="hidden min-[1700px]:flex flex-col items-center bg-white w-full col-span-2 col-start-7 overflow-hidden min-h-0">
+          <div className="w-full flex flex-col items-center p-3 pb-0 h-full min-h-0">
+            <p className="text-xl sm:text-2xl md:text-3xl font-bold text-center break-words flex-shrink-0">
+              Other Cool Stuff!
+            </p>
+            <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
+            <div className="flex-1 w-full overflow-shown min-h-0 flex items-center justify-center">
               {isResizing ? (
-                <div className="w-full h-full flex items-center justify-center text-gray-500">
+                <div className="w-full h-full flex items-center justify-center ">
                   Resizing...
                 </div>
               ) : (
@@ -90,13 +98,13 @@ export default function Home() {
               )}
             </div>
             <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
-            <div className="flex-1 w-full overflow-hidden min-h-0">
+            <div className="flex-1 w-full min-h-0 flex items-center justify-center mb-0">
               {isResizing ? (
-                <div className="w-full h-full flex items-center justify-center text-gray-500">
+                <div className="w-full h-full flex items-center justify-center">
                   Resizing...
                 </div>
               ) : (
-                <WebGLCanvas key={`right-${webglKey}`} />
+                <WebGLCanvas />
               )}
             </div>
           </div>
@@ -125,14 +133,14 @@ export default function Home() {
 
           {/* Right Card - tablet/mobile version */}
           <Card className="flex flex-col items-center bg-white w-full overflow-hidden min-h-[400px]">
-            <div className="w-full flex flex-col items-center p-3 h-full min-h-0">
+            <div className="w-full flex flex-col items-center h-full min-h-0">
               <p className="text-xl sm:text-2xl md:text-3xl font-bold text-center break-words flex-shrink-0">
                 Cool Stuff
               </p>
               <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
               <div className="flex-1 w-full overflow-visible min-h-0 flex items-center justify-center">
                 {isResizing ? (
-                  <div className="w-full h-full flex items-center justify-center text-gray-500">
+                  <div className="w-full h-full flex items-center justify-center ">
                     Resizing...
                   </div>
                 ) : (
@@ -140,9 +148,16 @@ export default function Home() {
                 )}
               </div>
               <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
-              <div className="flex-1 w-full overflow-visible min-h-0">
+              <div
+                className="flex-1 w-full overflow-visible min-h-0 h-full"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 {isResizing ? (
-                  <div className="w-full h-full flex items-center justify-center text-gray-500">
+                  <div className="w-full h-full flex items-center justify-center">
                     Resizing...
                   </div>
                 ) : (
@@ -159,7 +174,7 @@ export default function Home() {
       <Card className="flex flex-row items-center justify-center gap-4 p-4 mt-4 bg-[#ff7a05]">
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4 text-sm"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+          href="https://www.dev-fern.com/"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -170,7 +185,7 @@ export default function Home() {
             width={16}
             height={16}
           />
-          Examples
+          Recursion
         </a>
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4 text-sm"

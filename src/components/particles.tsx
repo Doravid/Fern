@@ -704,12 +704,11 @@ const Particles: React.FC = () => {
   return (
     <canvas
       ref={canvasRef}
+      className="shadow-shadow border-2 border-border"
       style={{
         display: "block",
         margin: "0 auto",
         background: "#000",
-        borderRadius: "15px",
-        boxShadow: "0 8px 16px rgba(0, 0, 0, 0.4)",
         touchAction: "none",
         userSelect: "none",
       }}

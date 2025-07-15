@@ -36,6 +36,9 @@ export default function WasmComponent({
             canvas.style.maxHeight = "100%";
             canvas.style.objectFit = "contain";
             canvas.style.margin = "0 auto";
+            // Apply shadow directly to the canvas
+            // canvas.style.boxShadow = "0 8px 16px rgba(0, 0, 0, 0.4)";
+            canvas.className = "shadow-shadow border-2 border-border";
 
             containerRef.current?.appendChild(canvas);
             return canvas;
@@ -88,15 +91,14 @@ export default function WasmComponent({
   return (
     <div
       ref={containerRef}
+      
       style={{
         width: "100%",
         height: "100%",
-        display: "block",
-        maxHeight: "100%",
+        display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        objectFit: "contain",
         position: "relative",
       }}
     >
@@ -111,7 +113,7 @@ export default function WasmComponent({
           }}
         >
           <Card>
-            <CardContent>Error loading WASM module</CardContent>
+            <CardContent>Loading WASM module...</CardContent>
           </Card>
         </div>
       )}
@@ -125,13 +127,12 @@ export default function WasmComponent({
             color: "red",
             borderRadius: "8px",
             textAlign: "center",
-            zIndex: 0,
+            zIndex: 1000,
           }}
         >
           <Card>
             <CardContent>Error loading WASM module</CardContent>
           </Card>
-          {/* <div>Error loading WASM module</div> */}
           <div style={{ fontSize: "14px", marginTop: "8px" }}>
             {errorMessage}
           </div>

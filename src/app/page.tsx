@@ -13,6 +13,7 @@ import ProjectCarousel from "@/components/ui/ProjectCarousel";
 import WebGLCanvas from "@/components/webgl";
 import Particles from "@/components/particles";
 import WasmComponent from "@/components/wasmComponent";
+import { cn } from "@/lib/utils"
 
 export default function Home() {
   const [webglKey, setWebglKey] = useState<number>(0);
@@ -45,59 +46,87 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen font-[family-name:var(--font-geist-sans)] px-2 sm:px-4 py-2 sm:py-4">
-      <main className="flex flex-col min-[1700px]:grid min-[1700px]:grid-cols-8 gap-4 flex-grow w-full">
+    <div className="flex flex-col h-screen font-[family-name:var(--font-geist-sans)] px-2 sm:px-4 py-2 sm:py-4">
+      <main className="flex flex-col min-[1700px]:grid min-[1700px]:grid-cols-8 gap-4 flex-1 w-full min-h-0">
         {/* Left Card - desktop version, hidden on tablet/mobile */}
-        <Card className="hidden min-[1700px]:flex flex-col items-center bg-white w-full col-span-2 col-start-1 overflow-hidden min-h-0">
+        <Card className="hidden min-[1700px]:flex flex-col items-center bg-white w-full col-span-2 col-start-1 overflow-hidden h-full max-h-screen">
           <div className="w-full flex flex-col items-center p-3 h-full min-h-0">
-            <p className="text-xl sm:text-2xl md:text-3xl font-bold text-center break-words flex-shrink-0">
+            <Card className="text-xl w-full sm:text-2xl md:text-3xl font-bold text-center break-words flex-shrink-0">
               Cool Stuff!
-            </p>
-            <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
+            </Card>
+            {/* <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" /> */}
             <div className="flex-1 w-full overflow-hidden min-h-0 flex items-center justify-center">
-              stuff
-            </div>
-            <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
-            <div className="flex-1 w-full overflow-shown min-h-0 flex items-center justify-center">
               <ProjectCarousel />
+            </div>
+            {/* <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" /> */}
+            <div style={{ fontSize: "24px" }}>My Cat Dora!!</div>
+
+            <div className="flex-1 w-full overflow-shown min-h-0 flex items-center justify-center pt-2">
+              <img
+                src={"/cat.jpg"}
+                className="w-auto h-auto max-w-full max-h-full object-contain shadow-shadow border-2 border-border"
+                style={{
+                }}
+              />
             </div>
           </div>
         </Card>
         {/* Middle Card */}
         <Card className="hidden min-[1700px]:flex flex-col items-center bg-[#ffca95] w-full col-span-4 col-start-3 overflow-hidden min-h-0">
           <div className="w-full flex flex-col items-center p-3 h-full min-h-0">
-            <p className="text-xl sm:text-2xl md:text-3xl font-bold text-center break-words flex-shrink-0">
+            <div className="text-xl w-full sm:text-2xl md:text-3xl font-bold text-center break-words flex-shrink-0">
               About Me!
-            </p>
-            <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
-            <div className="flex-1 w-full overflow-hidden min-h-0 flex items-center justify-center">
-              Hello! I'm Fern
             </div>
             <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
+            <div className="flex-1 w-full overflow-hidden min-h-0 flex items-center justify-center">
+              <Card
+                className="bg-white w-2/3 p-10 text-xl text-center"
+
+              >
+                Hello, I'm Fern! <br />
+                I'm a simple software developer who loves everything computer
+                graphics, cyber security, game development, and my adorable cat
+                Dora. <br />
+                <br />
+                If you have any questions about any of the projects here,
+                anything I have mentioned or just want to send me cat pictures,
+                reach out to me at <a href="mailto:doravidmc@gmail.com" className="text-blue-600">doravidmc@gmail.com</a>
+              </Card>
+            </div>
+            {/* <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" /> */}
             <div className="flex-1 w-full min-h-0 flex items-center justify-center">
               <WasmComponent />
             </div>
-            Press F to play in fullscreen!
+            <div
+              style={{
+                fontSize: "20px",
+                marginTop: "10px",
+                marginBottom: "10px",
+                textAlign: "center",
+              }}
+            >
+              Press F to enter fullscreen
+            </div>
           </div>
         </Card>
 
         {/* Right Card - desktop version, hidden on tablet/mobile */}
         <Card className="hidden min-[1700px]:flex flex-col items-center bg-white w-full col-span-2 col-start-7 overflow-hidden min-h-0">
           <div className="w-full flex flex-col items-center p-3 pb-0 h-full min-h-0">
-            <p className="text-xl sm:text-2xl md:text-3xl font-bold text-center break-words flex-shrink-0">
+            <Card className="w-full text-xl sm:text-2xl md:text-3xl font-bold text-center break-words flex-shrink-0">
               Other Cool Stuff!
-            </p>
-            <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
+            </Card>
+            {/* <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" /> */}
             <div className="flex-1 w-full overflow-shown min-h-0 flex items-center justify-center">
               {isResizing ? (
                 <div className="w-full h-full flex items-center justify-center ">
                   Resizing...
                 </div>
               ) : (
-                <Particles />
+                <Particles></Particles>
               )}
             </div>
-            <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
+            {/* <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" /> */}
             <div className="flex-1 w-full min-h-0 flex items-center justify-center mb-0">
               {isResizing ? (
                 <div className="w-full h-full flex items-center justify-center">
@@ -118,13 +147,13 @@ export default function Home() {
               <p className="text-xl sm:text-2xl md:text-3xl font-bold text-center break-words flex-shrink-0">
                 About Me!
               </p>
-              <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
+              {/* <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" /> */}
               <div className="flex-1 w-full overflow-hidden min-h-0 flex items-center justify-center">
                 <Card>
                   <CardContent>Hello, I'm Fern!</CardContent>
                 </Card>
               </div>
-              <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" />
+              {/* <hr className="w-full h-0.5 sm:h-1 bg-black my-3 sm:my-4 flex-shrink-0" /> */}
               <div className="flex-1 w-full overflow-shown min-h-0 flex items-center justify-center">
                 <ProjectCarousel />
               </div>

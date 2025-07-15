@@ -611,7 +611,7 @@ const WebGLCanvas: React.FC = () => {
     canvas.width = window.innerHeight / 3;
     canvas.height = window.innerHeight / 3;
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(0.0, 0.0, 0.0, 1.0); // Black background
+    gl.clearColor(0.1, 0.1, 0.1, 1.0); // Black background
 
     // Create shader program
     const program = createProgram(gl, vertexShaderSource, fragmentShaderSource);
@@ -728,12 +728,11 @@ const WebGLCanvas: React.FC = () => {
   return (
     <canvas
       ref={canvasRef}
+      className ="shadow-shadow border-2 border-border"
       style={{
         display: "block",
         margin: "0 auto",
         background: "#000",
-        borderRadius: "15px",
-        boxShadow: "0 8px 16px rgba(0, 0, 0, 0.4)",
         touchAction: "none",
         userSelect: "none",
       }}

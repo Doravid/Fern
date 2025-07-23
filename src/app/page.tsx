@@ -9,15 +9,15 @@ import WasmComponent from "@/components/wasmComponent";
 
 export default function Home() {
   const [isResizing, setIsResizing] = useState<boolean>(false);
-
-  const windowWidth = useRef(window.innerWidth);
+  const windowWidth = useRef(0);
+    useEffect(() => {
+    windowWidth.current = window.innerWidth;
+  }, []);
 
   useEffect(() => {
     let resizeTimer: NodeJS.Timeout;
 
     const handleResize = (): void => {
-      // **THE KEY CHANGE IS HERE**
-      // We only check if the width has changed.
       if (windowWidth.current === window.innerWidth) {
         // If width is the same, it's a mobile scroll, so we ignore it.
         return;

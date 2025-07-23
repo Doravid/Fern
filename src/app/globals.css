@@ -72,3 +72,24 @@
     @apply font-heading;
   }
 }
+
+@container carousel (min-width: 0px) {
+  .scalable-card {
+    border-radius: clamp(0.5rem, 1cqi, 0.75rem);
+    border-width: clamp(1px, 0.25cqi, 2px);
+    box-shadow: clamp(2px, 0.5cqi, 4px) clamp(2px, 0.5cqi, 4px) 0px 0px
+      var(--border);
+  }
+
+  .scalable-card:hover {
+    box-shadow: clamp(4px, 1cqi, 10px) clamp(4px, 1cqi, 10px) 0px 0px
+      var(--border);
+    transform: translateY(-2%);
+  }
+
+  .scalable-card .caption {
+    padding: clamp(0.5rem, 2cqi, 1rem);
+    font-size: clamp(0.875rem, 2.5cqi, 1.125rem);
+    border-top-width: clamp(1px, 0.25cqi, 2px);
+  }
+}

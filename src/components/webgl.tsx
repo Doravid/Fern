@@ -1,6 +1,9 @@
 // components/WebGLCanvas.tsx
 import React, { useRef, useEffect, useCallback } from "react";
+import { useResizeObserver } from "@/hooks/useResizeObserver"; // 1. Import the hook
 
+// --- All of your inlined utility functions (vec2, flatten, createProgram, etc.) remain unchanged ---
+// ... (Vector, Matrix, and WebGL utility functions go here)
 //////////////////////////////////////////////////////////////////////////////
 //
 // Inlined Angel.js (Math Utilities) - Only necessary functions included
@@ -513,7 +516,7 @@ class Obstacle {
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(outerColor));
 
-    gl.uniform1f(pointSizeUniformLocation, 70.0); // Larger size for outer ring
+    gl.uniform1f(pointSizeUniformLocation, gl.canvas.width / 10); // Larger size for outer ring
     gl.drawArrays(gl.POINTS, 0, 1);
 
     // Inner core color (opaque)
@@ -522,13 +525,17 @@ class Obstacle {
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(innerColor));
 
-    gl.uniform1f(pointSizeUniformLocation, 22.0); // Smaller size for the core
+    gl.uniform1f(pointSizeUniformLocation, gl.canvas.width / 30); // Smaller size for the core
     gl.drawArrays(gl.POINTS, 0, 1);
   }
 }
 
+
 const WebGLCanvas: React.FC = () => {
+  // 2. Use the hook to get a ref for the container and its dimensions
+  const { ref: containerRef, dimensions } = useResizeObserver<HTMLDivElement>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
   const webglState = useRef<WebGLState>({
     gl: null,
     program: null,
@@ -543,9 +550,10 @@ const WebGLCanvas: React.FC = () => {
   const obstaclesRef = useRef<Obstacle[]>([]);
   const lastTimeRef = useRef<number>(0);
 
-  // Animation loop function
+  // Animation loop function - no changes needed here
   const renderLoop = useCallback((currentTime: DOMHighResTimeStamp) => {
-    const {
+    // ... renderLoop logic is unchanged
+        const {
       gl,
       program,
       positionBuffer,
@@ -595,8 +603,9 @@ const WebGLCanvas: React.FC = () => {
     }
 
     webglState.current.animationFrameId = requestAnimationFrame(renderLoop);
-  }, []); // Dependencies are stable refs, so useCallback is effective
+  }, []);
 
+  // Main setup effect - runs once
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) {
@@ -604,16 +613,12 @@ const WebGLCanvas: React.FC = () => {
       return;
     }
 
-    // Initialize WebGL context
     const gl = setupWebGL(canvas) as WebGLRenderingContext;
+    if (!gl) return;
     webglState.current.gl = gl;
 
-    canvas.width = window.innerHeight / 3;
-    canvas.height = window.innerHeight / 3;
-    gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0.1, 0.1, 0.1, 1.0); // Black background
 
-    // Create shader program
     const program = createProgram(gl, vertexShaderSource, fragmentShaderSource);
     if (!program) {
       console.error("Failed to create WebGL program.");
@@ -622,7 +627,6 @@ const WebGLCanvas: React.FC = () => {
     gl.useProgram(program);
     webglState.current.program = program;
 
-    // Get attribute and uniform locations
     const vPosition = gl.getAttribLocation(program, "vPosition");
     const vColor = gl.getAttribLocation(program, "vColor");
     const pointSizeUniformLocation = gl.getUniformLocation(
@@ -642,12 +646,10 @@ const WebGLCanvas: React.FC = () => {
     webglState.current.vColor = vColor;
     webglState.current.pointSizeUniformLocation = pointSizeUniformLocation;
 
-    // Create global buffers to be reused for each particle/obstacle
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(vec2(0, 0)), gl.DYNAMIC_DRAW); // Initialize with dummy data
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(vec2(0, 0)), gl.DYNAMIC_DRAW);
     webglState.current.positionBuffer = positionBuffer;
-
     gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
 
@@ -657,13 +659,11 @@ const WebGLCanvas: React.FC = () => {
       gl.ARRAY_BUFFER,
       flatten(vec4(1.0, 1.0, 1.0, 1.0)),
       gl.DYNAMIC_DRAW
-    ); // Initialize
+    );
     webglState.current.colorBuffer = colorBuffer;
-
     gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vColor);
 
-    // Enable blending for transparency
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
@@ -673,9 +673,7 @@ const WebGLCanvas: React.FC = () => {
       const position = vec2(Math.random() * 2 - 1, Math.random() * 2 - 1);
       const velocity = vec2(Math.random() - 0.5, Math.random() - 0.5);
 
-      // Normalize initial velocity
       const initialSpeed = length(velocity);
-      // Ensure initialSpeed is not zero to prevent division by zero
       const normalizedVelocity =
         initialSpeed === 0
           ? vec2(0, 0)
@@ -696,7 +694,6 @@ const WebGLCanvas: React.FC = () => {
     // Initialize obstacles
     const initialObstacles: Obstacle[] = [];
     for (let i = 0; i < numObstacles; i++) {
-      // Using numObstacles here for initialization
       const position = vec2(Math.random() * 2 - 1, Math.random() * 2 - 1);
       initialObstacles.push(
         new Obstacle(position, vec4(0.95, 0.5, 0.85, 1) as Vec4)
@@ -704,34 +701,58 @@ const WebGLCanvas: React.FC = () => {
     }
     obstaclesRef.current = initialObstacles;
 
-    // Start the animation loop
-    lastTimeRef.current = performance.now() * 0.001; // Initialize lastTime in seconds
+    lastTimeRef.current = performance.now() * 0.001;
     webglState.current.animationFrameId = requestAnimationFrame(renderLoop);
 
-    // Cleanup function
     return () => {
       if (webglState.current.animationFrameId !== null) {
         cancelAnimationFrame(webglState.current.animationFrameId);
       }
-      // Clean up WebGL resources
       if (gl) {
-        if (webglState.current.program)
-          gl.deleteProgram(webglState.current.program);
-        if (webglState.current.positionBuffer)
-          gl.deleteBuffer(webglState.current.positionBuffer);
-        if (webglState.current.colorBuffer)
-          gl.deleteBuffer(webglState.current.colorBuffer);
+        if (webglState.current.program) gl.deleteProgram(webglState.current.program);
+        if (webglState.current.positionBuffer) gl.deleteBuffer(webglState.current.positionBuffer);
+        if (webglState.current.colorBuffer) gl.deleteBuffer(webglState.current.colorBuffer);
       }
     };
   }, [renderLoop]);
 
-  return (
+// In both WebGLCanvas.tsx and Particles.tsx
+
+useEffect(() => {
+  const canvas = canvasRef.current;
+  const gl = webglState.current.gl;
+
+  if (!canvas || !gl || !dimensions) {
+    return;
+  }
+
+  // Calculate the side length of the largest possible square
+  const size = Math.min(dimensions.width, dimensions.height);
+
+  // Apply the square size to the canvas's drawing buffer
+  canvas.width = size;
+  canvas.height = size;
+
+  // IMPORTANT: Also apply the size to the canvas's CSS styles
+  canvas.style.width = `${size}px`;
+  canvas.style.height = `${size}px`;
+
+  // Update the WebGL viewport
+  gl.viewport(0, 0, size, size);
+  
+}, [dimensions]);
+
+// In both WebGLCanvas.tsx and Particles.tsx
+
+return (
+  // This parent div fills the available space and centers the canvas
+  <div ref={containerRef} className="w-full h-full flex items-center justify-center">
     <canvas
       ref={canvasRef}
-      className ="shadow-shadow border-2 border-border"
+      // Apply the shadow and border directly to the canvas element
+      className="shadow-shadow border-2 border-border"
       style={{
-        display: "block",
-        margin: "0 auto",
+        display: "block", // Ensures it behaves correctly in the flex container
         background: "#000",
         touchAction: "none",
         userSelect: "none",
@@ -739,7 +760,8 @@ const WebGLCanvas: React.FC = () => {
     >
       Your browser does not support the HTML5 Canvas element.
     </canvas>
-  );
+  </div>
+);
 };
 
 export default WebGLCanvas;

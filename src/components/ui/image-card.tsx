@@ -10,7 +10,7 @@ export default function ImageCard({ imageUrl, caption, className }: Props) {
   return (
     <figure
       className={cn(
-        "w-[250px] overflow-hidden rounded-base border-2 border-border bg-main font-base shadow-shadow",
+        "overflow-hidden rounded-base border-2 border-border bg-main font-base shadow-shadow transition-transform duration-200 ease-in-out hover:scale-105",
         className
       )}
     >

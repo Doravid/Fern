@@ -1,6 +1,6 @@
 // components/WebGLCanvas.tsx
 import React, { useRef, useEffect, useCallback } from "react";
-import { mul } from "three/tsl";
+import { useResizeObserver } from "@/hooks/useResizeObserver";
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -311,7 +311,6 @@ const fragmentShaderSource = `
 
 // Simulation constants
 const numParticles = 200;
-const radius = 0.03; // Particle radius for collision/visuals
 const canvasSize = 1.0; // Assuming clip space range from -1 to 1
 
 // Using refs for mutable WebGL state and simulation data
@@ -337,7 +336,7 @@ class Particle {
     position: Vec2,
     velocity: Vec2,
     color: Vec4,
-    radius: number = 0.3
+    radius: number
   ) {
     this.position = position;
     this.velocity = velocity;
@@ -350,10 +349,6 @@ class Particle {
     this.position = add(this.position, scale(dt, this.velocity)) as Vec2;
   }
 
-  /**
-   * Handles collisions between this particle and the four walls.
-   * Uses simple bounce logic by inverting position if boundary is crossed.
-   */
   handleWallCollisions(restitution: number = 0.8) {
     // Left and right walls
     if (this.position[0] - this.radius <= -canvasSize) {
@@ -374,10 +369,6 @@ class Particle {
     }
   }
 
-  /**
-   * Handles interaction (chase/flee/convert) between this particle and another particle p.
-   * @param p The other particle for interaction.
-   */
   handleParticleCollisions(p: Particle) {
     const deltaX = this.position[0] - p.position[0];
     const deltaY = this.position[1] - p.position[1];
@@ -432,7 +423,7 @@ class Particle {
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(this.color));
 
-    gl.uniform1f(pointSizeUniformLocation, gl.canvas.width * this.radius); // Set point size for main particle
+    gl.uniform1f(pointSizeUniformLocation, gl.canvas.width * this.radius); 
     gl.drawArrays(gl.POINTS, 0, 1);
   }
   handleMouseForce(dt: number) {
@@ -464,6 +455,7 @@ let isMobile = false;
 // Helper function to get coordinates from mouse or touch event
 
 const Particles: React.FC = () => {
+  const { ref: containerRef, dimensions } = useResizeObserver<HTMLDivElement>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const webglState = useRef<WebGLState>({
     gl: null,
@@ -594,9 +586,7 @@ const Particles: React.FC = () => {
       isOnCanvas = false;
     });
 
-    canvas.width = window.innerHeight / 3;
-    canvas.height = window.innerHeight / 3;
-    gl.viewport(0, 0, canvas.width, canvas.height);
+
     gl.clearColor(0.85, 0.85, 0.95, 1.0); // Black background
 
     // Create shader program
@@ -658,9 +648,7 @@ const Particles: React.FC = () => {
       const position = vec2(Math.random() * 2 - 1, Math.random() * 2 - 1);
       const velocity = vec2(Math.random() - 0.5, Math.random() - 0.5);
 
-      // Normalize initial velocity
       const initialSpeed = length(velocity);
-      // Ensure initialSpeed is not zero to prevent division by zero
       const normalizedVelocity =
         initialSpeed === 0
           ? vec2(0, 0)
@@ -701,13 +689,31 @@ const Particles: React.FC = () => {
     };
   }, [renderLoop]);
 
-  return (
+useEffect(() => {
+  const canvas = canvasRef.current;
+  const gl = webglState.current.gl;
+
+  if (!canvas || !gl || !dimensions) {
+    return; 
+  }
+
+  const size = Math.min(dimensions.width, dimensions.height);
+
+  // Apply the square size to the canvas and WebGL viewport
+  canvas.width = size;
+  canvas.height = size;
+  gl.viewport(0, 0, size, size);
+
+}, [dimensions]);
+return (
+  // This parent div fills the available space and centers the canvas
+  <div ref={containerRef} className="w-full h-full flex items-center justify-center">
     <canvas
       ref={canvasRef}
+      // Apply the shadow and border directly to the canvas element
       className="shadow-shadow border-2 border-border"
       style={{
-        display: "block",
-        margin: "0 auto",
+        display: "block", // Ensures it behaves correctly in the flex container
         background: "#000",
         touchAction: "none",
         userSelect: "none",
@@ -715,7 +721,8 @@ const Particles: React.FC = () => {
     >
       Your browser does not support the HTML5 Canvas element.
     </canvas>
-  );
+  </div>
+);
 };
 
 export default Particles;

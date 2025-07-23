@@ -34,7 +34,8 @@ export default function ProjectCarousel() {
             >
               <ImageCard
                 className="shadow-none p-0 bg-main text-main-foreground w-full max-w-[26em] mx-auto"
-                caption="Recreated (poorly) my favorite puzzle game, SnakeBird, in Raylib / Zig!"
+                caption="I am recreating my favorite puzzle game, SnakeBird, in Raylib / Zig!
+                On the desktop version of my site, you can play the first few levels"
                 imageUrl="RayBird.png"
               />
             </a>
@@ -47,7 +48,7 @@ export default function ProjectCarousel() {
             >
               <ImageCard
                 className="shadow-none p-0 bg-main text-main-foreground w-full max-w-[26em] mx-auto"
-                caption="PMKS+ Pretty cool educational project I worked on for a while. Uses Angular 😔😔😔"
+                caption="PMKS+ Educational project I worked on. Simulates four-bar linkages."
                 imageUrl="PMKS.jpg"
               />
             </a>

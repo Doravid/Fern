@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import ProjectCarousel from "@/components/ui/ProjectCarousel";
 import WebGLCanvas from "@/components/webgl";
@@ -8,18 +8,34 @@ import Particles from "@/components/particles";
 import WasmComponent from "@/components/wasmComponent";
 
 export default function Home() {
-  const [isResizing, setIsResizing] = useState < boolean > (false);
+  const [isResizing, setIsResizing] = useState<boolean>(false);
+
+  const windowWidth = useRef(window.innerWidth);
 
   useEffect(() => {
     let resizeTimer: NodeJS.Timeout;
+
     const handleResize = (): void => {
+      // **THE KEY CHANGE IS HERE**
+      // We only check if the width has changed.
+      if (windowWidth.current === window.innerWidth) {
+        // If width is the same, it's a mobile scroll, so we ignore it.
+        return;
+      }
+
+      // If width has changed, update the ref to the new width.
+      windowWidth.current = window.innerWidth;
+      
+      // Now, proceed with your debounced resizing state logic.
       setIsResizing(true);
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
         setIsResizing(false);
       }, 250);
     };
+
     window.addEventListener("resize", handleResize);
+    
     return () => {
       window.removeEventListener("resize", handleResize);
       clearTimeout(resizeTimer);

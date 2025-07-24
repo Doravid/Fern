@@ -23,39 +23,64 @@ export default function WasmComponent({
       try {
         setLoadingState("loading");
 
-        // Configure Emscripten module before loading the script
         (window as any).Module = {
           canvas: (() => {
             const canvas = document.createElement("canvas");
             canvas.width = width;
             canvas.height = height;
 
-            // Ensure canvas is fully visible and responsive
             canvas.style.display = "block";
             canvas.style.maxWidth = "100%";
             canvas.style.maxHeight = "100%";
             canvas.style.objectFit = "contain";
             canvas.style.margin = "0 auto";
-            // Apply shadow directly to the canvas
-            // canvas.style.boxShadow = "0 8px 16px rgba(0, 0, 0, 0.4)";
             canvas.className = "shadow-shadow border-2 border-border";
 
             containerRef.current?.appendChild(canvas);
             return canvas;
           })(),
+          
+          out: function(text: string) {
+            console.log('WASM stdout:', text);
+          },
+          
+          err: function(text: string) {
+            console.error('WASM stderr:', text);
+          },
+          
+          stdin: function() {
+            return null;
+          },
+          
+          preRun: [],
+          postRun: [],
+          
           onRuntimeInitialized: () => {
             console.log("WASM module initialized");
             setLoadingState("loaded");
           },
+          
           locateFile: (path: string) => {
             if (path.endsWith(".wasm")) {
               return "RayBird/index.wasm";
             }
             return path;
           },
+          
+          noInitialRun: false,
+          noExitRuntime: true,
+          
+          arguments: [],
+          
+          instantiateWasm: undefined,
+          
+          onAbort: function(what: any) {
+            console.error('WASM aborted:', what);
+            setLoadingState("error");
+            setErrorMessage("WASM module aborted");
+          }
         };
 
-        // Load the Emscripten-generated script
         script = document.createElement("script");
         script.src = "RayBird/index.js";
         script.onload = () => {

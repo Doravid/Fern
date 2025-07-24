@@ -27,12 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <script type="text/javascript" src="/lib/webgl-utils.js"></script>
-        <script type="text/javascript" src="/lib/initShaders.js"></script>
-        <script type="text/javascript" src="/lib/MV.js"></script>
-        <script type="text/javascript" src="/lib/drawingFunctions.js"></script>
-      </head>
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

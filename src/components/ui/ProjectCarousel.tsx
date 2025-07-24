@@ -22,7 +22,7 @@ export default function ProjectCarousel() {
               <ImageCard
                 className="shadow-none p-0 bg-main text-main-foreground w-full max-w-[26em] mx-auto"
                 caption="Fun Little Project to add Rate My Professor rating to my school class planner."
-                imageUrl="RateMyPlanner.png"
+                imageUrl="RateMyPlanner.webp"
               />
             </a>
           </CarouselItem>
@@ -36,7 +36,7 @@ export default function ProjectCarousel() {
                 className="shadow-none p-0 bg-main text-main-foreground w-full max-w-[26em] mx-auto"
                 caption="I am recreating my favorite puzzle game, SnakeBird, in Raylib / Zig!
                 On the desktop version of my site, you can play the first few levels"
-                imageUrl="RayBird.png"
+                imageUrl="RayBird.webp"
               />
             </a>
           </CarouselItem>
@@ -57,7 +57,7 @@ export default function ProjectCarousel() {
             <ImageCard
               className="shadow-none p-0 bg-main text-main-foreground w-full max-w-[26em] mx-auto"
               caption="I also Like 3D Modeling!"
-              imageUrl="Wallpaper.png"
+              imageUrl="Wallpaper.webp"
             />
           </CarouselItem>
         </CarouselContent>

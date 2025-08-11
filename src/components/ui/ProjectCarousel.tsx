@@ -1,69 +1,70 @@
-import ImageCard from "@/components/ui/image-card";
-
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
+
+const projects = [
+  {
+    href: "https://github.com/better-wpi-planner/Chrome-Extension",
+    imageUrl: "RateMyPlanner.webp",
+    caption:
+      "Fun Little Project to add Rate My Professor rating to my school class planner.",
+  },
+  {
+    href: "https://github.com/Doravid/RayBird",
+    imageUrl: "RayBird.webp",
+    caption:
+      "I am recreating my favorite puzzle game, SnakeBird, in Raylib / Zig!",
+  },
+  {
+    href: "https://github.com/PMKS-Web/PMKS-Refactor",
+    imageUrl: "PMKS.jpg",
+    caption:
+      "PMKS+ Educational project I worked on. Simulates four-bar linkages.",
+  },
+  {
+    href: "https://www.dev-fern.com/",
+    imageUrl: "Wallpaper.webp",
+    caption: "I also Like 3D Modeling!",
+  },
+];
 
 export default function ProjectCarousel() {
   return (
-    <div className="w-full flex justify-center over overflow-shown">
-      <Carousel className="w-full max-w-full relative px-12 overflow-shown">
-        <CarouselContent className="ml-0 overflow-shown">
-          <CarouselItem className="p-4 sm:p-[30px] pl-4 sm:pl-[30px]">
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://github.com/better-wpi-planner/Chrome-Extension"
-            >
-              <ImageCard
-                className="shadow-none p-0 bg-main text-main-foreground w-full max-w-[26em] mx-auto"
-                caption="Fun Little Project to add Rate My Professor rating to my school class planner."
-                imageUrl="RateMyPlanner.webp"
-              />
-            </a>
+    // 👇 The only change is on this line
+    <Carousel className="w-full">
+      <CarouselContent>
+        {projects.map((project, index) => (
+          <CarouselItem key={index}>
+            <div className="p-1">
+              <HoverCard closeDelay={0} openDelay={0}>
+                <HoverCardTrigger asChild>
+                  <a
+                    href={project.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src={project.imageUrl}
+                      alt={project.caption}
+                      className="w-auto h-auto max-w-full max-h-full object-contain shadow-shadow border-2 border-border"
+                    />
+                  </a>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-64">
+                  {project.caption}
+                </HoverCardContent>
+              </HoverCard>
+            </div>
           </CarouselItem>
-          <CarouselItem className="p-4 sm:p-[30px] pl-4 sm:pl-[30px]">
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://github.com/Doravid/RayBird"
-            >
-              <ImageCard
-                className="shadow-none p-0 bg-main text-main-foreground w-full max-w-[26em] mx-auto"
-                caption="I am recreating my favorite puzzle game, SnakeBird, in Raylib / Zig!
-                On the desktop version of my site, you can play the first few levels"
-                imageUrl="RayBird.webp"
-              />
-            </a>
-          </CarouselItem>
-          <CarouselItem className="p-4 sm:p-[30px] pl-4 sm:pl-[30px]">
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://github.com/PMKS-Web/PMKS-Refactor"
-            >
-              <ImageCard
-                className="shadow-none p-0 bg-main text-main-foreground w-full max-w-[26em] mx-auto"
-                caption="PMKS+ Educational project I worked on. Simulates four-bar linkages."
-                imageUrl="PMKS.jpg"
-              />
-            </a>
-          </CarouselItem>
-          <CarouselItem className="p-4 sm:p-[30px] pl-4 sm:pl-[30px]">
-            <ImageCard
-              className="shadow-none p-0 bg-main text-main-foreground w-full max-w-[26em] mx-auto"
-              caption="I also Like 3D Modeling!"
-              imageUrl="Wallpaper.webp"
-            />
-          </CarouselItem>
-        </CarouselContent>
-        <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10" />
-        <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10" />
-      </Carousel>
-    </div>
+        ))}
+      </CarouselContent>
+    </Carousel>
   );
 }

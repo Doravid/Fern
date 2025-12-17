@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
   },
 };
-
+export const runtime = 'nodejs';
 export default function RootLayout({
   children,
 }: Readonly<{

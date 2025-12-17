@@ -1,4 +1,5 @@
 // components/WebGLCanvas.tsx
+"use client";
 import React, { useRef, useEffect, useCallback } from "react";
 import { useResizeObserver } from "@/hooks/useResizeObserver"; // 1. Import the hook
 
@@ -21,7 +22,9 @@ function _argumentsToArray(args: IArguments): number[] {
 export type Vec2 = [number, number];
 export type Vec3 = [number, number, number]; // Included for flatten's generic type, even if not directly used for operations
 export type Vec4 = [number, number, number, number];
-
+let isOnCanvas: boolean = false;
+let mouseX: number = 0;
+let mouseY: number = 0;
 export function vec2(...args: number[]): Vec2 {
   const result = _argumentsToArray(arguments);
   switch (result.length) {
@@ -413,10 +416,33 @@ class Particle {
     }
   }
 
-  /**
-   * Applies repulsive force from obstacles.
-   * @param obstacles The array of obstacles.
-   */
+  handleMouseForce() {
+    // Pass delta time
+    if (!isOnCanvas) return;
+    const speed = length(this.velocity);
+    const deltaX = this.position[0] - mouseX;
+    const deltaY = this.position[1] - mouseY;
+    const distanceSq = deltaX * deltaX + deltaY * deltaY;
+    const distance = Math.sqrt(distanceSq);
+    if (distance > radius * 20 || distance === 0) return;
+
+    const scaleFactor = 1 / distance ** 2;
+    const dirVec = scale(
+      scaleFactor,
+      normalize([deltaX, deltaY], false) as Vec2
+    );
+
+    // Make force proportional to time, not frame rate
+    const forceStrength = 0.005; // Adjust this value
+    this.velocity[0] += dirVec[0] * forceStrength;
+    this.velocity[1] += dirVec[1] * forceStrength;
+
+    this.velocity = scale(
+      speed,
+      normalize(this.velocity, false) as Vec2
+    ) as Vec2;
+  }
+
   handleObstacleForce(obstacles: Obstacle[]) {
     const speed = length(this.velocity);
     for (let i = 0; i < obstacles.length; i++) {
@@ -428,9 +454,7 @@ class Particle {
       const distanceSq = deltaX * deltaX + deltaY * deltaY;
       const distance = Math.sqrt(distanceSq);
 
-      // If the particle can't see the obstacle, ignore it.
       if (distance > radius * 10) {
-        // Using original senseRadius for obstacle
         continue;
       }
 
@@ -442,7 +466,7 @@ class Particle {
         normalize([deltaX, deltaY], false) as Vec2
       );
 
-      this.velocity[0] += dirVec[0] * 0.0005; // Repulsive force magnitude
+      this.velocity[0] += dirVec[0] * 0.0005;
       this.velocity[1] += dirVec[1] * 0.0005;
     }
     // Re-normalize velocity to maintain original speed
@@ -454,7 +478,7 @@ class Particle {
 
   getHeadPosition(): Vec2 {
     const speed = length(this.velocity);
-    if (speed === 0) return this.position; // Avoid division by zero if stationary
+    if (speed === 0) return this.position;
 
     const normalizedVelocity = [
       this.velocity[0] / speed,
@@ -466,28 +490,25 @@ class Particle {
     ];
   }
 
-  // Draw particle as a point with a separate head point
   render(
     gl: WebGLRenderingContext,
     positionBuffer: WebGLBuffer,
     colorBuffer: WebGLBuffer,
     pointSizeUniformLocation: WebGLUniformLocation | null
   ) {
-    // Draw main particle
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(this.position));
 
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(this.color));
 
-    gl.uniform1f(pointSizeUniformLocation, gl.canvas.width / 20); // Set point size for main particle
+    gl.uniform1f(pointSizeUniformLocation, gl.canvas.width / 20);
     gl.drawArrays(gl.POINTS, 0, 1);
 
-    // Draw head particle
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(this.getHeadPosition()));
 
-    gl.uniform1f(pointSizeUniformLocation, gl.canvas.width / 30); // Set smaller point size for head
+    gl.uniform1f(pointSizeUniformLocation, gl.canvas.width / 30);
     gl.drawArrays(gl.POINTS, 0, 1);
   }
 }
@@ -510,29 +531,25 @@ class Obstacle {
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(this.position));
 
-    // Outer "sense" color (more transparent)
     const outerColor = [...this.color] as Vec4;
     outerColor[3] = 0.1; // More transparent for the outer ring
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(outerColor));
 
-    gl.uniform1f(pointSizeUniformLocation, gl.canvas.width / 10); // Larger size for outer ring
+    gl.uniform1f(pointSizeUniformLocation, gl.canvas.width / 10);
     gl.drawArrays(gl.POINTS, 0, 1);
 
-    // Inner core color (opaque)
     const innerColor = [...this.color] as Vec4;
-    innerColor[3] = 1.0; // Opaque for the core
+    innerColor[3] = 1.0;
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferSubData(gl.ARRAY_BUFFER, 0, flatten(innerColor));
 
-    gl.uniform1f(pointSizeUniformLocation, gl.canvas.width / 30); // Smaller size for the core
+    gl.uniform1f(pointSizeUniformLocation, gl.canvas.width / 30);
     gl.drawArrays(gl.POINTS, 0, 1);
   }
 }
 
-
 const WebGLCanvas: React.FC = () => {
-  // 2. Use the hook to get a ref for the container and its dimensions
   const { ref: containerRef, dimensions } = useResizeObserver<HTMLDivElement>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -550,10 +567,8 @@ const WebGLCanvas: React.FC = () => {
   const obstaclesRef = useRef<Obstacle[]>([]);
   const lastTimeRef = useRef<number>(0);
 
-  // Animation loop function - no changes needed here
   const renderLoop = useCallback((currentTime: DOMHighResTimeStamp) => {
-    // ... renderLoop logic is unchanged
-        const {
+    const {
       gl,
       program,
       positionBuffer,
@@ -593,6 +608,7 @@ const WebGLCanvas: React.FC = () => {
     for (const p of currentParticles) {
       p.handleWallCollisions();
       p.handleObstacleForce(currentObstacles); // Pass obstacles to particle for force calculation
+      p.handleMouseForce();
       p.update(dt);
       p.render(gl, positionBuffer, colorBuffer, pointSizeUniformLocation);
     }
@@ -691,7 +707,6 @@ const WebGLCanvas: React.FC = () => {
     }
     particlesRef.current = initialParticles;
 
-    // Initialize obstacles
     const initialObstacles: Obstacle[] = [];
     for (let i = 0; i < numObstacles; i++) {
       const position = vec2(Math.random() * 2 - 1, Math.random() * 2 - 1);
@@ -709,59 +724,82 @@ const WebGLCanvas: React.FC = () => {
         cancelAnimationFrame(webglState.current.animationFrameId);
       }
       if (gl) {
-        if (webglState.current.program) gl.deleteProgram(webglState.current.program);
-        if (webglState.current.positionBuffer) gl.deleteBuffer(webglState.current.positionBuffer);
-        if (webglState.current.colorBuffer) gl.deleteBuffer(webglState.current.colorBuffer);
+        if (webglState.current.program)
+          gl.deleteProgram(webglState.current.program);
+        if (webglState.current.positionBuffer)
+          gl.deleteBuffer(webglState.current.positionBuffer);
+        if (webglState.current.colorBuffer)
+          gl.deleteBuffer(webglState.current.colorBuffer);
       }
     };
   }, [renderLoop]);
 
-// In both WebGLCanvas.tsx and Particles.tsx
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const gl = webglState.current.gl;
 
-useEffect(() => {
-  const canvas = canvasRef.current;
-  const gl = webglState.current.gl;
+    if (!canvas || !gl || !dimensions) {
+      return;
+    }
+    function normalizeCoordinates(
+      clientX: number,
+      clientY: number,
+      rect: DOMRect
+    ): [number, number] {
+      const mX = clientX - rect.left;
+      const mY = clientY - rect.top;
+      if (!canvas) return [0, 0];
+      const normalizedX = (mX / canvas.width) * 2 - 1;
+      const normalizedY = (mY / canvas.height) * -2 + 1;
+      return [normalizedX, normalizedY];
+    }
+    function updateMousePosition(clientX: number, clientY: number) {
+      const rect = canvas?.getBoundingClientRect();
+      if (!rect) return;
+      [mouseX, mouseY] = normalizeCoordinates(clientX, clientY, rect);
+    }
+    canvas.addEventListener("mousemove", (event: MouseEvent) => {
+      updateMousePosition(event.clientX, event.clientY);
+    });
 
-  if (!canvas || !gl || !dimensions) {
-    return;
-  }
+    canvas.addEventListener("mouseleave", (event: MouseEvent) => {
+      isOnCanvas = false;
+    });
 
-  // Calculate the side length of the largest possible square
-  const size = Math.min(dimensions.width, dimensions.height);
+    canvas.addEventListener("mouseenter", (event: MouseEvent) => {
+      isOnCanvas = true;
+    });
 
-  // Apply the square size to the canvas's drawing buffer
-  canvas.width = size;
-  canvas.height = size;
+    const size = Math.min(dimensions.width, dimensions.height);
 
-  // IMPORTANT: Also apply the size to the canvas's CSS styles
-  canvas.style.width = `${size}px`;
-  canvas.style.height = `${size}px`;
+    canvas.width = size;
+    canvas.height = size;
 
-  // Update the WebGL viewport
-  gl.viewport(0, 0, size, size);
-  
-}, [dimensions]);
+    canvas.style.width = `${size}px`;
+    canvas.style.height = `${size}px`;
 
-// In both WebGLCanvas.tsx and Particles.tsx
+    gl.viewport(0, 0, size, size);
+  }, [dimensions]);
 
-return (
-  // This parent div fills the available space and centers the canvas
-  <div ref={containerRef} className="w-full h-full flex items-center justify-center">
-    <canvas
-      ref={canvasRef}
-      // Apply the shadow and border directly to the canvas element
-      className="shadow-shadow border-2 border-border"
-      style={{
-        display: "block", // Ensures it behaves correctly in the flex container
-        background: "#000",
-        touchAction: "none",
-        userSelect: "none",
-      }}
+  return (
+    <div
+      ref={containerRef}
+      className="w-full h-full flex items-center justify-center"
     >
-      Your browser does not support the HTML5 Canvas element.
-    </canvas>
-  </div>
-);
+      <canvas
+        ref={canvasRef}
+        className="shadow-shadow border-2 border-border"
+        style={{
+          display: "block",
+          background: "#000",
+          touchAction: "none",
+          userSelect: "none",
+        }}
+      >
+        Your browser does not support the HTML5 Canvas element.
+      </canvas>
+    </div>
+  );
 };
 
 export default WebGLCanvas;

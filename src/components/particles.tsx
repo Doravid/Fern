@@ -1,4 +1,5 @@
 // components/WebGLCanvas.tsx
+"use client";
 import React, { useRef, useEffect, useCallback } from "react";
 import { useResizeObserver } from "@/hooks/useResizeObserver";
 

@@ -69,7 +69,7 @@ const projects: { title: string; href: string; description: string }[] = [
   },
   {
     title: "Rate My Planner",
-    href: "projects/rate-my-planner",
+    href: "/blog/rate-my-planner",
     description:
       "Adds Rate My Professor, Term Filtering, and Search to WPI Planner.",
   },

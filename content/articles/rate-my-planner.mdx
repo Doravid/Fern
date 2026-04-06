@@ -1,0 +1,22 @@
+---
+title: "Rate My Planner"
+date: "Winter 2025"
+---
+
+This was originally a [hackathon project](https://devpost.com/software/ratemyplanner) from Goat Hacks 2025. The idea was to add in Rate My Professor ratings to my schools course planner, [WPI Planner](https://planner.wpi.edu) using a chrome extension.
+
+![picture of wpi planner](/rate-my.jpg)
+
+It did what it set out to do... okayily. It was kind of buggy but for the most part it works.
+
+A few weeks after the hackathon I decided I wanted people to be able to actually use the plugin so I created dev accounts for Chrome and Firefox, and after a little bug fixing, uploaded the plugin to the World Wide Web. And vioala! I had a functioning [Chrome Extension](https://chromewebstore.google.com/detail/rate-my-planner/aajmoobnhedkfkgcbpajklajpofiieli) and [Firefox Add-On](https://addons.mozilla.org/en-US/firefox/addon/rate-my-planner/)
+
+WPI Planner is my favorite website of all time ever ever so I couldn't just let it sit there! So, I added in the ability to filter classes by term. You could even add them together, so you only get classes offered in A and C term. ![filter](/filter.png)
+
+The way it does this is actually kind of funny to me. Since this is a web extension what we have to do is this:
+
+Loop through all the children for the object that is a parent to all the class objects. Then check if title of one of element corresponding to the term had the word "not offered" in its title. If it did, then hide this element. 
+
+This was already super helpful! But I wanted more!! So a few months later I came back again, this time with the goal of adding search. I am honestly super surprises how well it performs. Since every time you enter or remove a letter it loops through every possible course and removes all the ones that do not contain a substring that matches what you have entered. ![search](/search.png)
+
+I really like this project. It is the epitome of build what you need. There were thing that annoyed me and I fixed them using my knowledge! At some point I will probably clean up the search so it retains the filters, since as of now if you search it ignores you filters so you need to reapply them, which is kinda confusing if nothing else. 

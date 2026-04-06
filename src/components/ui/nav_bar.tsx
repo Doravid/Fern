@@ -34,7 +34,7 @@ const courses: { title: string; href: string; description: string }[] = [
   },
   {
     title: "Operating Systems",
-    href: "blog/operating-systems",
+    href: "/blog/operating-systems",
     description:
       "CS 3013 - How are processes launched, threading, memory management, scheduling",
   },

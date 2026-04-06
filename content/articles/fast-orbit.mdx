@@ -1,0 +1,174 @@
+---
+title: "Fast Orbit"
+date: "Fall 2025"
+---
+
+**Fast-Orbit** is the first CTF challenge I ever made! It's a double free heap challenge that takes advantage of the fast bins letting you free the same pointer twice if they are not freed consecutively. 
+This challenge is based on [fastbin_dup.c](https://github.com/shellphish/how2heap/blob/master/glibc_2.35/fastbin_dup.c)
+
+**Here is Challenge:**
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+void *g_chunks[16];
+int g_allocated[16] = {0};
+int g_prepared = 0;
+__uint64_t *launch;
+
+void crash_ship() {
+  puts("We have liftoff!");
+  puts("Wait... What's happening?\n");
+
+  system("/bin/sh");
+  exit(0);
+}
+
+void launch_to_moon() {
+  puts("========================================");
+  puts("We have liftoff!");
+  puts("That's one small step for man,");
+  puts("one giant leap for mankind.");
+  puts("========================================");
+  exit(0);
+}
+
+int get_idx() {
+  char buf[8];
+  printf("Chunk index: ");
+  read(0, buf, 7);
+  return atoi(buf);
+}
+
+void add_training_space() {
+  int i;
+  for (i = 0; i < 16; i++) {
+    if (g_chunks[i] == NULL) {
+      break;
+    }
+  }
+  if (i == 16) {
+    puts("No free chunk slots!");
+    return;
+  }
+
+  g_chunks[i] = calloc(1, 8);
+  g_allocated[i] = 1;
+  printf("Allocated some space for training data: %i\n", i);
+}
+
+void remove_training_space() {
+  int idx = get_idx();
+  if (idx < 0 || idx >= 16 || g_chunks[idx] == NULL) {
+    puts("Invalid index.");
+    return;
+  }
+  free(g_chunks[idx]);
+  g_allocated[idx] = 0;
+}
+
+void edit_training_space() {
+  int idx = get_idx();
+  if (idx < 0 || idx >= 16 || !g_allocated[idx]) {
+    puts("Invalid index.");
+    return;
+  }
+  printf("Enter data: ");
+  char buf[16];
+  read(0, buf, 15);
+  long long data = atoll(buf);
+  *(__uint64_t *)g_chunks[idx] = data;
+  puts("Data written.");
+}
+
+void prepare() {
+  if (g_prepared) {
+    puts("Already prepared, nothing to do.");
+    return;
+  }
+  launch = calloc(1, 8);
+  *launch = launch_to_moon;
+  g_prepared = 1;
+  printf("Ready to launch to %p!\n", launch_to_moon);
+}
+
+void do_launch(void (*a)()) {
+  puts("Launching...");
+  a();
+}
+
+void menu() {
+  puts("\n-Mission Control-");
+  puts("1. Add training space");
+  puts("2. Remove training space");
+  puts("3. Edit training space");
+  puts("4. Prepare training");
+  puts("5. LAUNCH!");
+}
+
+int main() {
+  setbuf(stdout, NULL);
+  setbuf(stdin, NULL);
+  setbuf(stderr, NULL);
+
+  while (1) {
+    menu();
+    char choice_buf[8];
+    read(0, choice_buf, 7);
+    int choice = atoi(choice_buf);
+
+    switch (choice) {
+    case 1:
+      add_training_space();
+      break;
+    case 2:
+      remove_training_space();
+      break;
+    case 3:
+      edit_training_space();
+      break;
+    case 4:
+      prepare();
+      break;
+    case 5:
+      do_launch(*launch);
+      break;
+    default:
+      puts("Invalid command.");
+    }
+  }
+  return 0;
+}
+
+```
+
+## About
+
+This challenge is designed to teach and test the concept of a double free. In particular, it teaches about how double free is possible in modern versions of libc (2.35+) using fast bins. 
+
+Challenge assumptions
+
+ - Binary is provided to solver.
+ - ASLR is enabled for the challenge.
+ - A stack canary is present.
+ - PIE is enabled.
+
+ The goal of the challenge is to call the win function: `crash_ship()`
+
+ ## Challenge Flow
+
+1. Fill up the tcache bins so that the following allocations will be freed to the fast bins.
+2. Allocate 3 elements. 
+3. Free the first element, the second element, and first element again. You now have a double free. 
+4. At this point, the same heap location is in fast bins twice. This means that if you calloc 3 times, the first and the third calloc will point to the same location.
+5. Malloc twice using add_training_space(), keep note of the first allocation: This allocation will overlap with the function pointer. 
+6. Then call prepare() which callocs space for a function pointer and leaks the address of the launch_to_moo() function. 
+7. From there use offset of the crash_ship() function from the launch_to_moon() and overwrite the function pointer with the address of crash_ship(). 
+8. Call launch() to pop a shell!
+
+
+## Conclusion
+Overall, this challenge is okay. Something about it feels a little, cheap or generic? That said, it's an okay first challenge and a decent enough introduction to the concept of a double free. I think the difficulty depends a lot of if you understand how a double free works already. If you have a link to the how2heap entry for this exploit its not that hard. 

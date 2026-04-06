@@ -23,11 +23,6 @@ const courses: { title: string; href: string; description: string }[] = [
       "CS 4741/4732 - WebGL, Quaternions, Fragment/Vertex Shaders, Physics Animation",
   },
   {
-    title: "Algorithms",
-    href: "/blog/algo",
-    description: "CS 2223 - Pretty standard DSA class.",
-  },
-  {
     title: "Discrete Math",
     href: "/blog/discrete",
     description: "MA 2022 - Set theory. Boolean Algebra. Probability",
@@ -46,7 +41,7 @@ const courses: { title: string; href: string; description: string }[] = [
   },
   {
     title: "Multiplayer Network Games",
-    href: "/blog/multiplayer-network-games",
+    href: "/blog/multiplayer-games",
     description:
       "CS 411X - Class that goes over object serialization, making and using network libraries, and latency compensation.",
   },

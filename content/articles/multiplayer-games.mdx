@@ -1,0 +1,47 @@
+---
+title: "Multiplayer Network Games"
+date: "Winter 2025"
+---
+
+While I was taking the class I didn't really think much of it, but now looking back it was actually a super cool class. The premise of this class, which is a Computer Science and a Game Development class, is networked games. 
+
+The class was done entirely in he context of a ASCII based game engine called [Dragonfly](dragonfly.wpi.edu), the teachers own game engine. 
+
+The class was structured:
+
+* Every class we had a quiz.
+* Half way through each class we have an in class exercise.
+* Four major assignments that build upon each other.
+* Play-test two games at the school (most game development classes require this)
+
+I did kinda horrible on the quizzes, and I'm kind of annoyed about my participation grade since I got like a 70% on it even though I went to every class, did every in class exercise, and asked questions from time to time. Luckily, the two lowest quiz scores were dropped and assignments were worth 80% of the grade so everything else didn't really affect my grade..  
+
+## Assignment 1: Fruit Nina + Serialization 
+
+The first assignment had two main parts. The first was to follow a tutorial to create Fruit Ninja in the Dragonfly game engine. The second was to serialize and deserialize objects to binary without using serialization libraries. This was a pretty cool assignment, it wasn't particularly difficult, but it was really useful! It made you think about the minimum data you need to reconstruct an object, it also made you deal with how strings work under the hood and how do computers know how long serialized data is?
+Using the serialization you were supposed to add in game saving/loading so the player could press s to save the entire state of the game and then l to load back to that point!
+okay
+
+## Assignment 2: Network Library + Chat App
+
+The second assignment was creating the network library for the game engine and then "creating" a simple chat app. This was one of the more difficult assignments. The professor gave the header files which helped give a good structure to how the library should look. For this class we only ever used the server-client architecture. The Server had to be able to handle any number of clients, handle a few message types. e.g a client sending a chat message `Hello, World!`. It was a **lot** of socket handling!
+There were a few weird things since the professor wanted us to use polling. Each game tick we check if there are incoming messages, and if so handle them. 
+
+The chat portion of this assignment was pretty easy since the professor gave us a single person chat app to work with. 
+
+## Assignment 3: Multiplayer Fruit Ninja Game
+
+The next assignment wasn't that bad. It was making the fruit ninja game from before multiplayer. Since we already had a working network library this was pretty straight forward. Add message types for each message we want people to be able to send, e.g sword position, fruit position, etc. Since we had server authoritative we had the clients not actually cut the fruit but instead the server tells the clients if a fruit has been cut.
+
+
+## Assignment 4: Latency Compensation
+
+The last assignment was adding latency compensation to our multiplayer Fruit Ninja game. There were two types: Sword Prediction and Fruit Prediction.
+
+Sword prediction just meant that instead of the client sending the sword position to the server and the server sending back a message to move the sword (this was required for that assignment lol), we could just instantly move the sword on our screen and then tell the server where we moved it. 
+
+Fruit prediction was a bit more fun, when ever the server told you to spawn a fruit, you would use your current ping time to the server and the velocity of the fruit to predict where the fruit would be if there was no lag. Together these techniques made the game playable even with 400ms of lag. It made the game harder since on high lag some fruit would spawn in the middle of the screen but overall it was cool to see how the game became playable even in bad network conditions!
+
+## Conclusion
+
+Overall this class was super cool! It's worth it to take this class if you are interested in game development and/or networking! It was a medium difficulty class. Harder than the normal computer networking class, but more fun, which makes up for it!

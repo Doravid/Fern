@@ -28,7 +28,7 @@ There were also some slightly silly functions. My favorite was something along t
 
 I kept having to do issues related to this UI because it kept having bugs, so I eventually got sick of it and just refactored it. I probably should have made a seperate issue for that, but, eh who cares!
 
-I think the last interesting thing was adding the forces, since I got to implement them from scratch, while most of the project was just fixing / modifying things that already existed. I wanted to continue the patterns already in the project so I based the forces off of linkages. Under the hood they work, very very similarly. There were a few interesting problems I had to solve.
+The last interesting thing was adding the forces, since I got to implement them from scratch, while most of the project was just fixing / modifying things that already existed. I wanted to continue the patterns already in the project so I based the forces off of linkages. Under the hood they work, very very similarly. There were a few interesting problems I had to solve.
 
 The first was: How do you allow users to move a force such that it does not move its outside of the object it is attached to?
 Or more elegantly: How do you bound a point to within the convex shape formed by a set of points. The way to do this was to first take the "Convex Hull" of the set of points, basically if you wrapped a rubber band around the set of points, which points would be touching the rubber band. Then, you check which "side" of each of the points in the new set of points you are on to determine if you are on the same side.

@@ -11,6 +11,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import NavigationMenuDemo from "@/components/ui/nav_bar";
 
 export default function Home() {
   const [isResizing, setIsResizing] = useState<boolean>(false);
@@ -44,6 +45,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen min-[1700px]:h-screen font-[family-name:var(--font-geist-sans)] px-2 sm:px-4 py-2 sm:py-4">
+      <NavigationMenuDemo></NavigationMenuDemo>
       <main className="flex flex-col min-[1700px]:grid min-[1700px]:grid-cols-8 gap-4 flex-1 w-full min-h-0 min-[1700px]">
         <Card className="order-2 min-[1700px]:order-none flex flex-col items-center bg-white w-full min-[1700px]:col-span-2 min-[1700px]:col-start-1 overflow-hidden p-3 gap-4">
           <Card className="text-xl w-full sm:text-2xl md:text-3xl font-bold text-center break-words flex-shrink-0">

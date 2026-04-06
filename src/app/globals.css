@@ -1,6 +1,16 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@plugin "@tailwindcss/typography";
+
+@layer base {
+
+  code::before,
+  code::after {
+    content: none !important;
+  }
+}
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -62,13 +72,18 @@
   --font-weight-base: 700;
   --font-weight-heading: 900;
 }
-  
+
 @layer base {
   body {
     @apply text-foreground font-base bg-background;
   }
 
-  h1, h2, h3, h4, h5, h6{
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-heading;
   }
 }
@@ -77,13 +92,11 @@
   .scalable-card {
     border-radius: clamp(0.5rem, 1cqi, 0.75rem);
     border-width: clamp(1px, 0.25cqi, 2px);
-    box-shadow: clamp(2px, 0.5cqi, 4px) clamp(2px, 0.5cqi, 4px) 0px 0px
-      var(--border);
+    box-shadow: clamp(2px, 0.5cqi, 4px) clamp(2px, 0.5cqi, 4px) 0px 0px var(--border);
   }
 
   .scalable-card:hover {
-    box-shadow: clamp(4px, 1cqi, 10px) clamp(4px, 1cqi, 10px) 0px 0px
-      var(--border);
+    box-shadow: clamp(4px, 1cqi, 10px) clamp(4px, 1cqi, 10px) 0px 0px var(--border);
     transform: translateY(-2%);
   }
 

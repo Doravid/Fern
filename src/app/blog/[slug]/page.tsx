@@ -4,10 +4,20 @@ import fs from "fs";
 import matter from "gray-matter";
 import { marked } from "marked";
 import { notFound } from "next/navigation";
+import { markedHighlight } from "marked-highlight";
+import hljs from "highlight.js";
+import "highlight.js/styles/github-dark.css";
 
 export async function generateStaticParams() {
   return getAllArticles().map((a) => ({ slug: a.slug }));
 }
+marked.use(markedHighlight({
+  langPrefix: "hljs language-",
+  highlight(code, lang) {
+    const language = hljs.getLanguage(lang) ? lang : "plaintext";
+    return hljs.highlight(code, { language }).value;
+  }
+}));
 
 export default async function ArticlePage({
   params,
@@ -35,7 +45,7 @@ export default async function ArticlePage({
           prose-li:font-normal prose-li:text-foreground prose-li:marker:text-foreground
           prose-strong:text-foreground prose-strong:font-black
           prose-code:text-orange-400 prose-code:bg-neutral-800 prose-code:rounded prose-code:px-1.5 prose-code:py-0.5
-          prose-pre:bg-secondary-background prose-pre:text-foreground prose-pre:border-2 prose-pre:border-border
+          prose-pre:bg-transparent prose-pre:p-0
           
         "
         dangerouslySetInnerHTML={{ __html: html }}

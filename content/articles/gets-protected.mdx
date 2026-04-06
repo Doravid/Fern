@@ -1,0 +1,42 @@
+---
+title: "Gets Protected"
+date: "Fall 2025"
+---
+
+This was an interesting challenge to build. The challenge provides a basic setup: no stack canary, ASLR enabled, and PIE disabled. It hands us a stack leak and a *single* libc leak right out of the gate.
+
+Here is Challenge:
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main()
+{
+  setvbuf(stdout, NULL, _IONBF, 0);
+  setvbuf(stdin, NULL, _IONBF, 0);
+  char buf[64];
+
+  printf("Stack: %p\n", (void *)&buf);
+  printf(
+    "__nptl_change_stack_perm: %p\n",
+    (void *)((char *)stdin - 2040812));
+
+  gets(buf);
+}
+```
+
+The intended path is pretty difficult, since you don't have the libc version you don't know the location of your usual suspects like system, or /bin/sh, etc. I do have a feeling there might be an easier unintended path. It's probably possible to guess the libc version.
+
+The initial idea was to have a challenge that revolved around a cool exploit I found called [ret2gets](https://sashactf.gitbook.io/pwn-notes/pwn/rop-2.34+/ret2gets). It allows you to control the buffer pointed to by rdi by using the fact that after you call gets, rdi points to a buffer inside of libc, which means if you call gets a second time, you will be writing to this buffer, and rdi will continue to point at it. 
+
+I had some difficulty trying to figure out how to turn this into an actual challenge though. I needed some way that specifically controller the buffer at rdi would let you gain code execution. Luckily, I found the amazing article [Make Stack Executable Again](https://vulnx.dev/blog/posts/Make-Stack-Executable-Again/) that explains how you can fake a libc struct if you have control over a buffer at RDI which lets can call `nptl_change_stack_perm`, a libc internal function to make the stack executable. Because I give you a stack address, making the stack executable means you can run any code you want. 
+
+The full exploit flow is as follows: 
+1. Read the address of buf and __nptl_change_stack_perm
+2. Use gets to overwrite the return address, calling gets again to read our faked struct into memory
+3. Jump to __nptl_change_stack_perm to make the stack executable. 
+4. Jump to buf, which should have our shellcode.
+
+
+Sadly I don't have this challenge up anymore, if anyone wants to try it out, just shoot me an email and I can set up a server for you to try on!

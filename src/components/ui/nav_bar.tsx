@@ -18,18 +18,18 @@ import { cn } from "@/lib/utils";
 const courses: { title: string; href: string; description: string }[] = [
   {
     title: "Computer Graphics and Animation",
-    href: "courses/computer-graphics",
+    href: "/blog/computer-graphics",
     description:
       "CS 4741/4732 - WebGL, Quaternions, Fragment/Vertex Shaders, Physics Animation",
   },
   {
     title: "Algorithms",
-    href: "courses/algo",
+    href: "/blog/algo",
     description: "CS 2223 - Pretty standard DSA class.",
   },
   {
     title: "Discrete Math",
-    href: "courses/discrete",
+    href: "/blog/discrete",
     description: "MA 2022 - Set theory. Boolean Algebra. Probability",
   },
   {
@@ -40,13 +40,13 @@ const courses: { title: string; href: string; description: string }[] = [
   },
   {
     title: "Software Security",
-    href: "courses/software-security",
+    href: "/blog/software-security",
     description:
       "CS 557 - Buffer Overflows, stack layout, how do applications really work, and how can we exploit that?",
   },
   {
     title: "Multiplayer Network Games",
-    href: "courses/multiplayer-network-games",
+    href: "/blog/multiplayer-network-games",
     description:
       "CS 411X - Class that goes over object serialization, making and using network libraries, and latency compensation.",
   },
@@ -55,13 +55,13 @@ const courses: { title: string; href: string; description: string }[] = [
 const writeUps: { title: string; href: string; description: string }[] = [
   {
     title: "Gets Protected",
-    href: "/write-ups/gets-protected",
+    href: "/blog/gets-protected",
     description:
       "One of my challenges that revolves around understanding the internals of glibc.",
   },
   {
     title: "Fast Orbit",
-    href: "/write-ups/fast-orbit",
+    href: "/blog/fast-orbit",
     description: "One of my challenges. Double free heap challenge.",
   },
 ];

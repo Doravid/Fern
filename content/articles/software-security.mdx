@@ -1,0 +1,58 @@
+---
+title: "Software Security"
+date: "Fall 2024"
+---
+
+This class had a very interesting structure. There was a mid term, final, and creating two challenges. The rest of the class was solving CTF challenges. The final could be skipped if you were created the second challenge though. To get an A in the class you needed to solve a certain number of challenges, create two challenges, and pass the midterm. I ended up getting the most points :D I think that makes me the best h@x0r. 
+
+This was also one of the first graduate courses I took, and thus, one of the first semester long courses I took. I think overall I didn't mind the course being a semester long, but it felt like it dragged on a bit by the end.
+
+Most of the course followed the structure of having three types of challenges: Lecture Challenges, Binary Challenges, and Game Challenges.
+
+## What did I learn?
+
+### Buffer Overflows
+
+Lecture challenges are, as the name implies, challenges we go over during the lecture. These started out very simple. For example, you have a call to the function gets on a buffer right next to a variable x. You win the challenge if `x != 0`. Then the professor explains how gets works, how it doesn't check the size of the array its reading into and how it will write variables after the buffer on the stack. Then we have to solve the problem on own time (if we didn't follow along in class which I never did lol). 
+
+We then moved into setting individual bytes, like what if instead of x != 0 it was x == 512. This required us to learn about the byte layout of ints, but otherwise was not really that much harder. 
+
+### Control Flow Hijacking
+
+Then we learned about control flow hijacking! Basically if you know the address of a function you want to jump to, lets say a function called hax_your_comput0r(), and you are able to write to the stack, again with gets, then you can overwrite the return address of the function, with the address of your hax_your_comput0r function. This lets you jump to any function you know the address of. However this technique depends on you being able to change the return address.
+
+The next thing we learned about was Stack Canaries. They are just numbers put between the stack and the return address, and if it is modified, then the program will instantly crash. This makes it a lot harder to return where you want to. To get around this you either need to guess the value, read the value, or write directly to the return address, e.g without modifying the canary. 
+
+All of these are very difficult in practice but depending on the challenge it might be possible. For example, one challenge we had to do involved a program what constantly forked itself, then called gets. Fun fact: When a program forks itself, its stack canary is the same as the program it was forked from. You could guess the canary one byte at a time and then use it on the main process to jump to your win function!
+
+### Ret2LibC
+
+Another type of exploit we learned about was [ret2libc](https://medium.com/@mounisha.makineni12/return-to-libc-attack-exploiting-buffer-overflow-for-privilege-escalation-105fea0fe9a2) which is essentially just jumping to a win function inside of the C standard library called `system`. System will spawn a shell and run the command passed to it. It does require setting up an argument with the text `/bin/sh` so it's not a true win function, but it is still very powerful. 
+
+We had a whole short lecture series on printf(). I am now terrified of printf... never pass a buffer straight into printf. e.g print(my_array). This is basically instantly making your program compromised as it lets you read/write stack values due to printf having wayyy too many features. 
+
+### Heap Exploitation 
+
+Then we get into the second half of the class. Heap Exploitation. I don't really like how this part was introduced. We just walked through a Heap challenge. I would have liked a **lot** more time dedicated to a proper explanation on how exactly the heap is laid out, what the different bins are, when freed memory goes where, etc. I'm still not very good at heap challenges...
+
+### Making New Challenges
+
+Luckily after this is was **CUSTOM CHALLENGE TIME BABYYYYYY**
+
+While [my first challenge](https://www.dev-fern.com/blog/fast-orbit) was boring and lame, the challenges my classmates made were super cool! We had two in class CTF competitions. I don't think my team ever won, but we somehow managed to keep getting the solutions right after class ended.
+
+Some of the cool challenges I got to solve were: 
+* A wasm challenge where you had to read some web assembly
+* A challenge that required you to binary search like half the address space for a specific address!
+* One that had you leak the entire binary and then jump to a win function you leaked from the source code!
+
+
+There were also two students who gave presentations on kernel exploits. Those were super cool!
+
+## Conclusion
+
+This class taught a lot of stuff. Looking back there is more stuff than I remember. I wouldn't call this class hard per say. I struggled more with operating systems than software security, however, the grading for this class was brutal. You will have to put in a LOT of time. The undergraduate version would be even worse since you half the time for what is, as far as I know, pretty similar amount of content. 
+
+This class did probably help me get a systems engineering internship. It gave me a very deep understanding of C, libc, memory, and linux works under the hood which I think impressed some of the interviewers.
+
+I'm not sure who I would recommend this class to. It was pretty fun, and taught a lot. Sadly it seems a bit too hard to get an A, which is a bit sad since I know a lot of smart people are worried to take classes that grade hard because they don't want to hurt their GPA. If you are okay with a B, or if you are super confident then go ahead!! It really did teach me a lot of cool stuff.

@@ -1,0 +1,39 @@
+---
+title: "Planar Mechanism Kinematic Simulator Plus"
+date: "Summer 2025"
+---
+
+Summer of 2025 I was able to do paid software development for the first time.
+
+This project was honestly super fun! My boss was super chill, the project was pretty interesting, and I feel like I got a lot of experience actually developing software!
+
+The first week was mostly just learning about planar linkages, past project reports (This project was a masters thesis and a senior project for team of three). Reading through the past project reports was actually super helpful because they go over the design standards in detail. One thing that I learned from this project is that having a set, standard, colors for things, makes your projects more cohesive/look better. I now have a color theme of my own (it includes orange if you cannot tell).
+
+I also started messing around with the codebase at this point. I wasn't fixing any issues but just getting a feel of the architecture. Looking back the project isn't actually that big, and by the end I had touched almost every part of the codebase!
+
+The first thing I did just to see if I could was make the animation speed a slider instead of discrete steps. E.g it used to be a button that would go 1x, 2x, 3x, 0.5x, 1x. So, I found the button element, and replaced it with a slider that I stole from elsewhere in the project. Then I had to figure out how to link the value of the slider to the actual speed of the animation. The button was calling an api that handled that all for me, so all I had to do was send the sliders position using the same API. Though I did scale it so it would be between 0-5. However at this point I realized that past about 4x speed, it ran into performance issues and thus did not actually move any faster. 
+
+Feeling somewhat confident, the next week I got started working on some issues that my boss posted. I should take some time now to explain how much I love this workflow. It was dead simple. My boss would look through the app, point out what was broken, missing, or needed improvment, and then make a handful of issues to address the issues one by one. Then I could just go through them and fix. This was super simple for me, and let me just focus on getting as much done as fast as possible. 
+
+At this point there's a bunch of random stuff I worked on, luckily I made a poster that shows most of my work during my Summer!
+
+![poster](/Poster.png)
+
+I did more than whats on the poster, but most of it is pretty menial bug fixes. For example, joints are not meant to be moveable during animation, stuff like that.
+
+One line that might get glossed over in the poster is "Reduced “Three Position Synthesis” code size by over 1,000 lines while increasing functionality."
+
+Which is an insane line when you consider the fact that functionality was added to this UI element, not removed. The reason there was so much code removed is that, for some reason, there was an insane amount of data duplication (not sure if this is the technical term), but essentially the same data was being stored in 2 different places, and whenever it got modified in one place, it needed to be updated in the other. This lead to bugs and bloated functions since they needed to handle more than they should have. 
+There were also some slightly silly functions. My favorite was something along the lines of fooBarX(x: number) and then a function fooBarY(y: number) and then the functions were identical other than the renamed variable. These function had no side effects... they were the same function. 
+
+I kept having to do issues related to this UI because it kept having bugs, so I eventually got sick of it and just refactored it. I probably should have made a seperate issue for that, but, eh who cares!
+
+I think the last interesting thing was adding the forces, since I got to implement them from scratch, while most of the project was just fixing / modifying things that already existed. I wanted to continue the patterns already in the project so I based the forces off of linkages. Under the hood they work, very very similarly. There were a few interesting problems I had to solve.
+
+The first was: How do you allow users to move a force such that it does not move its outside of the object it is attached to?
+Or more elegantly: How do you bound a point to within the convex shape formed by a set of points. The way to do this was to first take the "Convex Hull" of the set of points, basically if you wrapped a rubber band around the set of points, which points would be touching the rubber band. Then, you check which "side" of each of the points in the new set of points you are on to determine if you are on the same side.
+If not then you need to clamp the position to be on the line formed by the two closest points. 
+
+Sorry if the explanation doesn't make complete sense! It has been a few months since I actually worked on this...
+
+Overall I am very pleased with what I got done over the summer! It was a lot of fun and I even got my poster printed! I had it hung up in my room for a few weeks, but it was too heavy and kept falling down...

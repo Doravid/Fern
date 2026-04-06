@@ -3,7 +3,7 @@ title: "Gets Protected"
 date: "Fall 2025"
 ---
 
-This was an interesting challenge to build. The challenge provides a basic setup: no stack canary, ASLR enabled, and PIE disabled. It hands us a stack leak and a *single* libc leak right out of the gate.
+This was an interesting challenge to build. The challenge provides this setup: the challenge is remote, but you are given the binary (without libc), there is no stack canary, ASLR is enabled, and PIE is disabled. It hands us a stack leak and a *single* libc leak right out of the gate.
 
 Here is Challenge:
 ```c
@@ -26,17 +26,18 @@ int main()
 }
 ```
 
-The intended path is pretty difficult, since you don't have the libc version you don't know the location of your usual suspects like system, or /bin/sh, etc. I do have a feeling there might be an easier unintended path. It's probably possible to guess the libc version.
+The intended path is pretty difficult, since you don't have the libc version you don't know the location of your usual suspects like `system`, or `/bin/sh`, etc. I do have a feeling there might be an easier unintended path. Maybe it's possible to guess the libc version? 
 
-The initial idea was to have a challenge that revolved around a cool exploit I found called [ret2gets](https://sashactf.gitbook.io/pwn-notes/pwn/rop-2.34+/ret2gets). It allows you to control the buffer pointed to by rdi by using the fact that after you call gets, rdi points to a buffer inside of libc, which means if you call gets a second time, you will be writing to this buffer, and rdi will continue to point at it. 
+The initial idea was to have a challenge that revolved around a cool exploit I learned about called [ret2gets](https://sashactf.gitbook.io/pwn-notes/pwn/rop-2.34+/ret2gets). 
+It allows you to control the buffer pointed to by rdi by using the fact that after you call gets, rdi points to a buffer inside of libc, which means if you call gets a second time, you will be writing to this buffer, and rdi will continue to point at it. 
 
-I had some difficulty trying to figure out how to turn this into an actual challenge though. I needed some way that specifically controller the buffer at rdi would let you gain code execution. Luckily, I found the amazing article [Make Stack Executable Again](https://vulnx.dev/blog/posts/Make-Stack-Executable-Again/) that explains how you can fake a libc struct if you have control over a buffer at RDI which lets can call `nptl_change_stack_perm`, a libc internal function to make the stack executable. Because I give you a stack address, making the stack executable means you can run any code you want. 
+I had some difficulty trying to figure out how to turn this into an actual challenge though. I needed to make controlling the buffer at rdi give you code execution. Luckily, I found an amazing article, [Make Stack Executable Again](https://vulnx.dev/blog/posts/Make-Stack-Executable-Again/), that explains how you can fake a libc struct if you have control over a buffer at RDI which lets pass it into the function `nptl_change_stack_perm`, a libc internal function that can make the stack executable. Because I give you a stack address, and you have a user controlled buffer on the stack, making the stack executable means you can run any code you want. 
 
 The full exploit flow is as follows: 
-1. Read the address of buf and __nptl_change_stack_perm
-2. Use gets to overwrite the return address, calling gets again to read our faked struct into memory
+1. Read the address of buf and __nptl_change_stack_perm.
+2. Use gets to overwrite the return address, calling gets again (which is at a constant address since PIE is disabled) to read our fake struct into memory.
 3. Jump to __nptl_change_stack_perm to make the stack executable. 
-4. Jump to buf, which should have our shellcode.
+4. Jump to the stack, which should have the shellcode.
 
 
-Sadly I don't have this challenge up anymore, if anyone wants to try it out, just shoot me an email and I can set up a server for you to try on!
+Sadly I don't have this challenge running anymore, if anyone wants to try it out, just shoot me an email and I can set up a server for you to try on!

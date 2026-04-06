@@ -69,7 +69,7 @@ const writeUps: { title: string; href: string; description: string }[] = [
 const projects: { title: string; href: string; description: string }[] = [
   {
     title: "PMKS+",
-    href: "/projects/pmks",
+    href: "/blog/pmks",
     description: "Planar linkage simulation software.",
   },
   {

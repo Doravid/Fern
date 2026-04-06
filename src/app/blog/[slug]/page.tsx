@@ -46,7 +46,7 @@ export default async function ArticlePage({
           prose-strong:text-foreground prose-strong:font-black
           prose-code:text-orange-400 prose-code:bg-neutral-800 prose-code:rounded prose-code:px-1.5 prose-code:py-0.5
           prose-pre:bg-transparent prose-pre:p-0
-          
+          prose-img:rounded
         "
         dangerouslySetInnerHTML={{ __html: html }}
       />

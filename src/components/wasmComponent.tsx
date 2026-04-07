@@ -63,7 +63,7 @@ export default function WasmComponent({
           
           locateFile: (path: string) => {
             if (path.endsWith(".wasm")) {
-              return "RayBird/index.wasm";
+              return "/RayBird/index.wasm";
             }
             return path;
           },
@@ -83,7 +83,7 @@ export default function WasmComponent({
         };
 
         script = document.createElement("script");
-        script.src = "RayBird/index.js";
+        script.src = "/RayBird/index.js";
         script.onload = () => {
           console.log("WASM script loaded");
         };

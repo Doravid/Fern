@@ -1,0 +1,47 @@
+---
+title: "Raybird"
+date: "Always"
+---
+
+I'm not really sure where to start with this one. This is probably the project I have spent the most time on. It doesn't really look like it, but I'm not a particularly fast dev, and a lot of this project has been figuring out how to write software that I don't immediately have to rewrite. 
+
+To start with I should explain the high level of this project. The goal was to recreate the entire game [Snake Bird](https://store.steampowered.com/app/357300/Snakebird/) in Zig using the Raylib library. One fun fact about zig is that it is super wasm friendly which means it is pretty trivial to do things like this (WASD to move):
+<WasmComponent/> 
+**BAM** game. Okay, its a bit more difficult than that, but honestly not nearly as much as you would think. There are maybe 4-5 lines of code to make the game pretty much entirely compatible with the web
+
+
+ At this point I have more or less completed my original goal of recreating the game. It doesn't look as good as the original game but I ported the first 20ish levels, and I could port most of the remaining levels pretty quickly if I wanted to.
+## Game Architecture 
+For most of development the way the game works was that there are two main structures. First you had the world grid. This was a 2d array of blockType enums. The second structure was the player array. Since the player needed to move it made sense to make it it's own thing since it would have to move unaligned to the grid at times. The raylib Vector datatype uses 32 bit floats, so I ended up using that data type, even when sometimes ints made more sense just so I wouldn't have to convert between them as much. Zig type conversions are LONG: `@as(i32,@intFromFloat(3.5))`. 
+
+One thing that I also wanted was a level editor. The original game never had a official level editor so I thought it would be cool to have one, plus it would help me make levels! The levels are just json files. Levels are just a combination of a world grid and a player position. 
+
+## Reducing the Ugly
+Once I got some of the core mechanics prototyped I decided the game looked too ugly. The player was made of box textures I found online. I'm not actually very good at art but I spent a few minutes and made some art for the snake, I implemented it so that the snakes alternate between two colors so its easier to tell what parts of their body are where. I also added in clouds, a sun, and water. However something didn't seem good enough. I realized that to make the sun look nice I would need to add bloom since bloom blurs the bright parts of a scene. To accomplish this I would have to use a shader. Luckily, bloom shaders are pretty common online. I took this opportunity to also find and add a pixelate shader. To use shaders in raylib it's a little weird. You first have to render your scene to a blank texture. Then apply your shader, then draw that texture to screen. But it looks a lot better than before so I was happy!
+
+**Before Shaders**
+![raybird_new](/LevelEditor.png)
+
+**After Shaders**
+![raybird_new](/raybird_new.png)
+
+## Undo/Redo 
+Another feature I added pretty early in development was undo/redo. This was very natural to me to add as soon as possible. Looking back it would have made more sense to add it later since it meant when I redid how player movement worked I had to redo how the undo/redo works as well. But I still think its cool! It just takes a snapshot of the player and map positions every time you move and adds them to what is essentially a stack. And whenever you undo, it pops the top element and puts it into a redo stack. 
+
+## Movement Rework
+Oh yeah, the movement rework. So apparently the movement in this game is way more complex then it initially seems. Since its possible to push boxes into your own body and also stand on your own body, or stand on the body of another snake, it turns out these all kind of turn into graph dependency problems at the worst case (snakes head on a box, when the box is resting on the snakes tail). Which is fine but I wasted a lot of time hunting down bugs one by one until I realized its not really possible to get around the dependency problem. The way my algorithem used to work was check if the block you are trying to move into was moveable. If it was solid the answer was no, if it was yes the answer was yes, if it was a player or box I just assumed no, since for a long time I only supported one player and boxes were just broken. However, a proper implementation needs to properly check if the player/box can moved. Origionally, I just had it run the same check on every element of the snake/box you were trying to move, however this did not really work as there are loops where a snakebird is next to itself so it would never resolve wether it could move or not. There were a few hacky solutions that I tried until deciding to "give up" and just shove a proper graph algo that marked cells as visited and used a generic structure over snakebirds and boxes so you could have boxes of any size. 
+
+## Map Rework
+
+I was so stoopid when I made the map. There are a TON of levels that need to be over 9 blocks tall. I have no idea why I was under the impression that 9 blocks tall would be enough at an point. 
+
+To rework this I replaced the map array with a map. A hash map of type \<Vector2, BlockType>to be exact. What I did was just use the rule of every undefined element can be assumed to be air. This made it so that maps could be any height. If I wanted to place a block on (1,000,000, -343,000)? No problem! Well, some problem. You see, for some brilliant reason, I decided to use integer casting as my form of truncating numbers. This worked fine when I was only dealing with positive numbers. However, when I unlimited the map size I suddenly had to deal with negative numbers. At first you might not understand why this is so catastrophic. I didn't. One question is all it takes to understand.
+
+What does 0.5 become to during integer casting? 0 Obviously. Now, what does -0.5 become during integer casting? That's right 0. This meant that if the player ever went to a negative X value pretty much everything would break since none of my code could tell the different between 0.9 and -0.9. Luckily, there is a zig built in called @floor() that lets -0.9 go to -1 not 0. So I was able to just replace all of my integer casts with @floor().
+
+# Future work?
+
+Im not really sure if I will ever really complete this projecnote implementing teleporters, and auto zoom, are less interesting. 
+
+
+I

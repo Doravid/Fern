@@ -1,0 +1,297 @@
+---
+title: "Nolib Server"
+date: "Fall 2025"
+---
+
+This was an idea that I had while taking Software Security. Once I learned how linux x86 calling system calls worked I realized it would be possible to make a webserver without using a single library, even libc. The source code is at the bottom if you care! You can also find it on [my GitHub](github.com/Doravid/nolib-server/).
+
+The way I went about doing it was pretty simple. Create a simple web server. Then go through and remove the libraries one by one. I will skip over making the server, since that was honestly pretty boring and was mostly just me stealing code from geek2geeks!
+
+I started by remaking the string libraries. I rewrote strlen, strchr (finding the first instance of a char in a string), and strcmp. Overall this part was pretty easy as it was just recreating simple functions.  
+
+One very interesting is the optimization level for my strlen function actually has to be set to be O1. This is because otherwise the compiler will replace it with the libc version of the function on certain optimization levels, e.g O2. 
+```C
+__attribute__((optimize("O1"))) int sizeOfString(char *str)
+{
+    int i = 0;
+    while (str[i] != '\0')
+    {
+        i++;
+    }
+    return i;
+}
+```
+It's honestly funny that gcc can detect that I recreated a libc function, and was just like, absolutely not! Normally this isn't a problem, but since I remove libc at a letter step, trying to call a libc function does not end well...
+
+
+The next thing I did was add print. This was explained to me in a lecture so it was easy to replicate. The idea is to use a system call called "write." To use a system call normally you use the libc wrapper, however, that obviously won't do if the whole point is to not use any libraries! So what do we do? Inline assembly! However, first we must understand how system calls are well... called. What you do is load data into predefined registers. Then call the syscall assembly instruction. Luckily, there is a [nifty website](https://filippo.io/linux-syscall-table/) that lists exactly what each system call needs in each register to be called! 
+
+Looking at the entry for write we can see it requires four registers!
+- rax: 0x1 (rax is the regsiter that tell linux which syscall we are calling, the int 1 is the ID for write)
+- rdi: The file descriptor of where to write. In our case this will be 2, since that is the file descriptor for stdout.
+- rsi: A pointer to data you wish to write. In our case this is pointer passed into our function.
+- rdx: The number of bytes to write.
+
+Putting it all together we get this function to print a string!
+```C
+int print(char *string)
+{
+    sizeOfString(string);
+    __asm__("mov %rdi, %rsi\n"
+            "mov $2, %rdi\n"   // 2 is the stdout fd
+            "mov $1, %rax\n"   // 1 is the syscall number for write
+            "syscall\n");
+    return 0;
+}
+```
+Wait a minute! I'm sure you are exclaiming. "write" expects the size to be in rdx! You don't even touch rdx!
+This is true, kind of. Since we call the function sizeOfString() to get the length of the string we wish to print, rdx already has the correct value. This is because the function passes its return value IN the rdx register, meaning it's already there! We don't need to do a thing! 
+
+The rest of the project was mostly just doing this again and again for all the syscalls. One things I realized was that calling conventions make my life a lot easier. Since functions pass their arguments through registers, if you simply make a function that takes in the arguments in the correct order, you might not have to do any setup. 
+
+Take bind soccet as an example
+```C
+int bindSocket(int fileFd, struct sockaddress_in *, int size)
+{
+    __asm__(
+        "mov $49, %rax\n"
+        "syscall");
+}
+```
+Notice how we only set rax, the id of the syscall, and then we call syscall? This is possible because fileFd, sockaddress_in, and size are all already in the correct register!
+
+One issue with the socket commands though is that they require a socket structure. How this structure is layed out is actually defined by linux so it has to match perfectly. This causes me to be very confused when I created the sockaddress_in struct. I had all the "correct" fields for the struct, but the system call kept failing. I had no idea why. Well it turns out that there are a handful of socket structures that all have the exact same size to make it possible to convert between them. Because of this, the system call expected 8 bytes of padding in my struct I simply didn't have. 
+
+```C
+struct sockaddress_in
+{
+    unsigned short sin_family;
+    unsigned short sin_port;
+    struct in_address sin_addr;
+    unsigned char sin_zero[8]; //this is the evil padding I had to add.
+};
+```
+
+After replacing all the socket functions I was finally free of all the evil libc functions!!
+
+Or was I? It turns out there was one more libc function, even if we didn't have a single import statement it will still be called :( I am of course talking about the main function. Yes, you heard me right, when your program is run, main is not actually the first thing that is run, its actually _start(), a function normally included by libc. However, if you want to get rid of libc (as you should), then you have no choice but to make your own. For my program this was actually super simple! I don't care about arguments, environment variables, or well anything else really for that matter. So after renaming my main function to _start() I was done!!
+
+The last step was to compile this majestic program. There are a few weird flags you need to get this to work properly. Using -static and -nostdlib, will make sure the program has no dynamic libraries and make sure evil stdlib is nowhere to be found in the compiled binary. Apparently -fno-stack-protector is also needed? It probably has something to do with the fact I don't handle any setup in _setup, since thats where it fails to compile. I'm pretty sure this means the program is considered malware... Enjoy!!!
+
+`gcc server.c -nostdlib -fno-stack-protector -o server -static`
+
+## Conclusion
+
+- libc sucks.
+- Return to assembly.
+- gcc is stoopid, I know better.
+
+### **Source Code:**
+```C
+#define SIZE (4096 * 4)
+#define AF_INNET 2
+#define SOCKET_STREAM 1
+#define SOL_SOCKET 1
+#define SO_REUSEADDR 2
+
+int sendToFd(int output_fd, int input_fd, int size);
+int openPath(char *filePath);
+
+struct in_address
+{
+    unsigned int s_addr;
+};
+struct sockaddress_in
+{
+    unsigned short sin_family;
+    unsigned short sin_port;
+    struct in_address sin_addr;
+    unsigned char sin_zero[8];
+};
+__attribute__((optimize("O1"))) int sizeOfString(char *str)
+{
+    int i = 0;
+    while (str[i] != '\0')
+    {
+        i++;
+    }
+    return i;
+}
+char *firstPointerToChar(char *string, char ch)
+{
+    int i = 0;
+    while (string[i] != ch)
+    {
+        i++;
+    }
+    return string + i;
+}
+int areStringEqual(char *a, char *b)
+{
+    int i = 0;
+    while (a[i] != 0 && b[i] != 0)
+    {
+
+        if (a[i] != b[i])
+            return 0;
+        i++;
+    }
+    return 1;
+}
+int isHtmlFile(char *path)
+{
+    char *dot = firstPointerToChar(path, '.');
+
+    return dot && areStringEqual(dot, ".html");
+}
+int isIcoFile(char *path)
+{
+    char *dot = firstPointerToChar(path, '.');
+
+    return dot && areStringEqual(dot, ".ico");
+}
+int print(char *string)
+{
+    int size = sizeOfString(string);
+    __asm__("mov %rdi, %rsi\n"
+            "mov %rdx, %rdx\n" // We need to load the return value of sizeOfString, we just got lucky
+            "mov $2, %rdi\n"   // 2 is the stdout fd
+            "mov $1, %rax\n"   // 1 is the syscall number for write
+            "syscall\n");
+    return 0;
+}
+void writeToFd(int fd, char *text, int size)
+{
+    __asm__(
+        "mov $1, %rax\n"
+        "syscall");
+}
+int sendToFd(int output_fd, int input_fd, int size)
+{
+    __asm__(
+        "mov %rdi, %rdi\n" // Load the out fd
+        "mov %rcx, %rsi\n" // Load the in fd
+        "mov $40, %rax\n"  // load the sendfile syscall
+        "mov %rdx, %r10\n" // Load the size
+        "xor %rdx, %rdx\n" // zero out the options
+        "syscall");
+}
+
+void closeFd(int fd)
+{
+    __asm__(
+        "mov %rdi, %rdi\n"
+        "mov $3, %rax\n"
+        "syscall");
+}
+int openPath(char *filePath)
+{
+    __asm__(
+        "mov %rdi, %rdi\n" // load file path (redundant but kept for sake of sanity)
+        "mov $2, %rax\n"
+        "xor %rdx, %rdx\n"
+        "xor %rsi, %rsi\n"
+        "syscall");
+}
+void receive(int fd, char *message, int size)
+{
+    __asm__(
+        "mov $0, %rax\n"
+        "syscall");
+}
+int acceptRequest(int sockFd, struct sockaddress_in *, int size)
+{
+    __asm__(
+        "mov $43, %rax\n"
+        "syscall");
+}
+int bindSocket(int fileFd, struct sockaddress_in *, int size)
+{
+    __asm__(
+        "mov $49, %rax\n"
+        "syscall");
+}
+int listenPort(int fileFd, int backlog)
+{
+    __asm__(
+        "mov $50, %rax\n"
+        "syscall");
+}
+int makeSocket(int domain, int type, int protocol)
+{
+    __asm__(
+        "mov $41, %rax\n"
+        "syscall");
+}
+void setSocketOption(int fd, int level, int optname, const void *optval, int optlen)
+{
+    __asm__ volatile(
+        "mov $54, %rax\n" // syscall for setsockopt
+        "syscall");
+}
+
+int serveFile(char *buffer, int client_fd)
+{
+    char *file = buffer + 5;
+    *firstPointerToChar(file, ' ') = 0;
+    int opened_file_fd;
+    if (sizeOfString(file) == 0)
+    {
+        file = "index.html";
+        opened_file_fd = openPath("index.html");
+    }
+    else
+    {
+        opened_file_fd = openPath(file);
+        if (opened_file_fd < 1)
+        {
+            file = "404.html";
+            opened_file_fd = openPath("404.html");
+        }
+    }
+    if (isHtmlFile(file))
+    {
+        char *header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
+        writeToFd(client_fd, header, sizeOfString(header));
+    }
+    if (isIcoFile(file))
+    {
+        char *header = "HTTP/1.1 200 OK\r\nContent-Type: image/ico\r\n\r\n";
+        writeToFd(client_fd, header, sizeOfString(header));
+    }
+    sendToFd(client_fd, opened_file_fd, SIZE);
+    return opened_file_fd;
+}
+
+int _start()
+{
+    char buffer[SIZE];
+    int opt = 1;
+    print("Starting Server\n");
+
+    int socket_fd = makeSocket(AF_INNET, SOCKET_STREAM, 0);
+    if (socket_fd < 0)
+        return socket_fd;
+    struct sockaddress_in addr = {AF_INNET, 0x2823 /*port 9000*/, 0};
+
+    setSocketOption(socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    if (bindSocket(socket_fd, &addr, sizeof(addr)) < 0)
+    {
+        print("failed to bind to socket.\n");
+        return -1;
+    }
+    listenPort(socket_fd, 5);
+    print("Server started, now accepting requests\n");
+    while (1)
+    {
+        int client_fd = acceptRequest(socket_fd, 0, 0);
+        receive(client_fd, buffer, SIZE);
+        print(buffer);
+        int ret_fd = serveFile(buffer, client_fd);
+        print("Sent a file!\n");
+        closeFd(ret_fd);
+        closeFd(client_fd);
+    }
+    closeFd(socket_fd);
+}
+```

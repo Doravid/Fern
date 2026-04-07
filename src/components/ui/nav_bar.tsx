@@ -75,18 +75,18 @@ const projects: { title: string; href: string; description: string }[] = [
   },
   {
     title: "Raybird",
-    href: "projects/raybird",
+    href: "/blog/raybird",
     description:
       "Recreation and Level Editor for the puzzle game Snake Bird. Built in Zig/Raylib",
   },
   {
     title: "Nolib Server",
-    href: "projects/nolib",
+    href: "/blog/nolib",
     description: "Serves files. However, as we all know: libc is bloatware.",
   },
   {
     title: "Banh Me",
-    href: "projects/banhme",
+    href: "/blog/banhme",
     description:
       "Short puzzle game built for learning Vietnamese while having fun!",
   },

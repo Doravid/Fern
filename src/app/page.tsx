@@ -12,6 +12,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import NavigationMenuDemo from "@/components/ui/nav_bar";
+import BanhMe from "@/components/BanhMe";
 
 export default function Home() {
   const [isResizing, setIsResizing] = useState<boolean>(false);
@@ -107,6 +108,7 @@ export default function Home() {
               </div>
             ) : (
               <Particles />
+              
             )}
           </div>
           <div className="flex-1 w-full aspect-square min-[1700px]:aspect-auto min-[1700px]:min-h-0 flex items-center justify-center">

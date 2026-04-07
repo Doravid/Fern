@@ -5,12 +5,12 @@ import matter from "gray-matter";
 import { compileMDX } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
 import remarkGfm from "remark-gfm";
-import hljs from "highlight.js";
 import "highlight.js/styles/github-dark.css";
-import ClientWasmComponent from "@/components/clientWasmComponent";
+import WasmComponent from "@/components/wasmComponent";
+import BanhMe from "@/components/BanhMe";
 import rehypeHighlight from "rehype-highlight";
 
-const components = { WasmComponent: ClientWasmComponent };
+const components = { WasmComponent: WasmComponent, BanhMe: BanhMe };
 
 
 const articleClasses = `

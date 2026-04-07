@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Bánh Me</title>
+
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        attribute vec2 vTexCoord;
+        uniform mat4 modelMatrix;
+        varying vec2 fTexCoord;
+
+        void main() {
+            gl_Position = modelMatrix * vPosition;
+            fTexCoord = vTexCoord;
+        }
+    </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment">
+    precision mediump float;
+    varying vec2 fTexCoord;
+
+    uniform sampler2D u_texture;
+
+    void main() {
+        vec4 texColor = texture2D(u_texture, fTexCoord);
+        if (texColor.a < 0.1) {
+            discard;
+        }
+        gl_FragColor = texColor;
+    }
+</script>
+    <script src="lib/webgl-utils.js"></script>
+    <script src="lib/initShaders.js"></script>
+    <script src="lib/MV.js"></script>
+    <script src="lib/level.js"></script>
+    <script src="lib/npc.js"></script>
+    <script src="example.js"></script>
+    <script src="lib/dictionary.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="left">
+            <canvas id="gl-canvas" width="1000" height="1030"></canvas>
+            <div id="overlay">
+                <div><span id="dialog"></span></div>
+
+            </div>
+            <div id="overlay">
+                <div><span id="item"></span></div>
+
+            </div>
+
+        </div>
+
+        <div id="dictionary">
+            <h1 id="journal_title">Your vocabulary journal</h1>
+            <div id="actual_word_list"></div>
+        </div>
+
+    </div>
+</body>
+
+</html>

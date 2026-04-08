@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Ice Skater Effect - Angular Momentum</title>
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+attribute vec4 vPosition;
+attribute vec3 vNormal;
+
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform mat3 normalMatrix;
+
+varying vec3 fNormal;
+varying vec3 fPosition;
+
+void main() {
+    fNormal = normalize(normalMatrix * vNormal);
+    fPosition = vec3(modelViewMatrix * vPosition);
+    gl_Position = projectionMatrix * modelViewMatrix * vPosition;
+}
+    </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+
+varying vec3 fNormal;
+varying vec3 fPosition;
+
+void main() {
+    vec3 lightPos = vec3(5.0, 5.0, 5.0);
+    vec3 ambient = vec3(0.2, 0.2, 0.2);
+    vec3 lightDir = normalize(lightPos - fPosition);
+    float diff = max(dot(normalize(fNormal), lightDir), 0.0);
+    vec3 color = vec3(0.5, 0.7, 1.0);
+    gl_FragColor = vec4(ambient + diff * color, 1.0);
+}
+    </script>
+
+    <style>
+        #ui-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: sans-serif;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+    </style>
+
+    <script type="text/javascript" src="lib/webgl-utils.js"></script>
+    <script type="text/javascript" src="lib/initShaders.js"></script>
+    <script type="text/javascript" src="lib/MV.js"></script>
+<script type="text/javascript" src="drawingFunctions.js"></script>
+    <script type="text/javascript" src="example.js"></script>
+</head>
+<body>
+<canvas id="gl-canvas" width="800" height="600">
+    Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+
+<div id="ui-panel">
+    <label>Arm Radius: <input type="range" id="radiusSlider" min="0.2" max="1.5" step="0.01" value="1.0"></label>
+</div>
+
+</body>
+</html>

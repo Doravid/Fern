@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CS 4731 Final Project</title>
+</head>
+
+<body>
+    <canvas id="gl-canvas" width="1600" height="900">
+        Oops! Your browser doesn't support WebGL!
+    </canvas>
+    <div id="controls-panel"
+        style="position: absolute; top: 10px; right: 10px; background-color: rgba(0,0,0,0.7); color: white; padding: 15px; border-radius: 5px; font-family: monospace, sans-serif; max-width: 260px;">
+        <h3 style="margin-top: 0; color: #4CAF50;">Controls</h3>
+        <ul style="padding-left: 10px; margin-bottom: 5px;">
+            <li><strong>L</strong> - Toggle Point Light</li>
+            <li><strong>C</strong> - Toggle Camera Rotation</li>
+            <li><strong>M</strong> - Toggle Car Movement</li>
+            <li><strong>D</strong> - Toggle Car Cam</li>
+            <li><strong>E</strong> - Toggle Skybox</li>
+            <li><strong>S</strong> - Toggle Shadows</li>
+            <li><strong>R</strong> - Toggle Car Reflection</li>
+            <li><strong>F</strong> - Toggle Bunny Refraction</li>
+            <li><strong>-</strong> - Decrease Car Speed</li>
+            <li><strong>+</strong> - Increase Car Speed</li>
+        </ul>
+    </div>
+
+    <!-- Shaders -->
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        attribute vec4 vNormal;
+        attribute vec2 vTexCoord;
+        uniform mat4 modelViewMatrix;
+        uniform mat4 projectionMatrix;
+        uniform mat3 normalMatrix;
+        varying vec3 fNormal;
+        varying vec2 fTexCoord;
+        varying vec3 fPosition;
+        varying vec3 fWorldPos;  // Add this line
+        
+        void main() {
+          // Transform vertex position into eye coordinates
+          vec4 positionInEye = modelViewMatrix * vPosition;
+          // Transform normal into eye coordinates
+          fNormal = normalize(normalMatrix * vNormal.xyz);
+          // Pass texture coordinates to fragment shader
+          fTexCoord = vTexCoord;
+          // Pass position in eye coordinates to fragment shader
+          fPosition = positionInEye.xyz;
+          // Pass world position for reflection calculations (use position directly)
+          fWorldPos = vPosition.xyz;  // Add this line
+          // Transform vertex position with projection matrix
+          gl_Position = projectionMatrix * positionInEye;
+        }
+       </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec3 fNormal;
+        varying vec2 fTexCoord;
+        varying vec3 fPosition;
+        varying vec3 fWorldPos;
+        
+        uniform bool uUseTexture;
+        uniform sampler2D uTexture;
+        uniform vec4 uDiffuse;
+        uniform vec4 uSpecular;
+        uniform vec4 uLightPosition;
+        uniform vec4 uAmbient;
+        uniform bool uEnablePointLight;
+        uniform samplerCube uEnvMap;
+        uniform bool uEnableReflection;
+        uniform bool uEnableRefraction;
+        
+        void main() {
+          vec3 normal = normalize(fNormal);
+          vec3 lightDirection = normalize(uLightPosition.xyz - fPosition);
+          float diffuseComponent = max(dot(normal, lightDirection), 0.0);
+          
+          vec4 materialColor;
+          if (uUseTexture) {
+            materialColor = texture2D(uTexture, fTexCoord);
+          } else {
+            materialColor = uDiffuse;
+          }
+          
+          vec4 ambient = uAmbient * materialColor;
+          vec4 diffuse = vec4(0.0, 0.0, 0.0, 0.0);
+          
+          vec3 viewDirection = normalize(-fPosition);
+          vec3 reflectionDirection = reflect(-lightDirection, normal);
+          float specularComponent = pow(max(dot(viewDirection, reflectionDirection), 0.0), 16.0);
+          vec4 specular = vec4(0.0, 0.0, 0.0, 0.0);
+
+          if (uEnablePointLight){
+            diffuse = diffuseComponent * materialColor;
+            specular = specularComponent * uSpecular;
+          }
+          
+          vec4 finalColor = ambient + diffuse + specular;
+          
+          // Add reflection calculation
+          if (uEnableReflection) {
+            vec3 reflectionVector = reflect(-viewDirection, normal);
+            vec4 reflectionColor = textureCube(uEnvMap, reflectionVector);
+            // Mix reflection with the original color (keep it subtle for car)
+            finalColor = mix(finalColor, reflectionColor, 0.3);
+          }
+          
+          // Replace bunny material completely with refraction when enabled
+          if (uEnableRefraction) {
+            float refractionRatio = 1.00 / 1.52; // Air to glass ratio
+            vec3 viewDirection = normalize(-fPosition);
+            vec3 refractionVector = refract(-viewDirection, normal, refractionRatio);
+            vec4 refractionColor = textureCube(uEnvMap, refractionVector);
+            // Completely replace the color instead of mixing
+            finalColor = refractionColor;
+          }
+          
+          gl_FragColor = finalColor;
+        }
+       </script>
+    <!-- Skybox Shaders -->
+    <script id="skybox-vertex-shader" type="x-shader/x-vertex">
+    attribute vec3 vPosition;
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionMatrix;
+    varying vec3 texCoords;
+    void main() {
+        texCoords = vPosition;
+        vec4 pos = projectionMatrix * modelViewMatrix * vec4(vPosition, 1.0);
+        gl_Position = pos.xyww;
+    }
+    </script>
+    <script id="skybox-fragment-shader" type="x-shader/x-fragment">
+    precision mediump float;
+    varying vec3 texCoords;
+    uniform samplerCube skybox;
+    
+    void main() {
+        gl_FragColor = textureCube(skybox, texCoords);
+    }
+    </script>
+    <!-- Shadow Shaders -->
+    <script id="shadow-vertex-shader" type="x-shader/x-vertex">
+    attribute vec4 vPosition;
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionMatrix;
+    
+    void main() {
+        gl_Position = projectionMatrix * modelViewMatrix * vPosition;
+    }
+</script>
+
+    <script id="shadow-fragment-shader" type="x-shader/x-fragment">
+    precision mediump float;
+    
+    void main() {
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 0.9);  // Semi-transparent black
+    }
+</script>
+    <script type="text/javascript" src="lib/webgl-utils.js"></script>
+    <script type="text/javascript" src="lib/initShaders.js"></script>
+    <script type="text/javascript" src="lib/MV.js"></script>
+    <script type="text/javascript" src="lib/model.js"></script>
+    <script type="text/javascript" src="lib/face.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+</body>
+
+</html>

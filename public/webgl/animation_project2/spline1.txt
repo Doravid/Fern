@@ -1,0 +1,50 @@
+# One integer denoting the number of splines ("nSplines") defined within the file.
+1
+# For each spline:
+# One integer denoting the number of control points for this spline.
+7
+# One float denoting the number of seconds over which to move the object from start to finish.
+2.0
+# For each point:
+# Control point 1
+#   Three floats denoting X, Y, Z position.
+0.0, 0.0, 0.0
+#   Three floats denoting XRot, YRot, ZRot Euler angles for orientation.
+0.0, 360.0, 0.0
+#
+# Control point 2
+#   Three floats denoting X, Y, Z position.
+10.0, 0.0, 0.0
+#   Three floats denoting XRot, YRot, ZRot Euler angles for orientation.
+0.0, 300.0, 0.0
+#
+# Control point 3
+#   Three floats denoting X, Y, Z position.
+10.0, 10.0, 0.0
+#   Three floats denoting XRot, YRot, ZRot Euler angles for orientation.
+0.0, 240.0, 0.0
+#
+# Control point 4
+#   Three floats denoting X, Y, Z position.
+0.0, 10.0, 0.0
+#   Three floats denoting XRot, YRot, ZRot Euler angles for orientation.
+0.0, 180.0, 0.0
+#
+# Control point 5
+#   Three floats denoting X, Y, Z position.
+0.0, 0.0, 0.0
+#   Three floats denoting XRot, YRot, ZRot Euler angles for orientation.
+0.0, 120.0, 0.0
+#
+# Control point 6
+#   Three floats denoting X, Y, Z position.
+10.0, 0.0, 0.0
+#   Three floats denoting XRot, YRot, ZRot Euler angles for orientation.
+0.0, 60.0, 0.0
+#
+# Control point 7
+#   Three floats denoting X, Y, Z position.
+10.0, 10.0, 0.0
+#   Three floats denoting XRot, YRot, ZRot Euler angles for orientation.
+0.0, 0.0, 0.0
+#

@@ -15,7 +15,6 @@ export default function BanhMe() {
         scrolling="no"
         style={{
           width: iframeWidth,
-          
           height: iframeHeight,
           transformOrigin: "top left",
           transform: `scale(${scale})`,

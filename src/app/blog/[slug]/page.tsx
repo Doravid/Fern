@@ -9,8 +9,18 @@ import "highlight.js/styles/github-dark.css";
 import WasmComponent from "@/components/wasmComponent";
 import BanhMe from "@/components/BanhMe";
 import rehypeHighlight from "rehype-highlight";
+import GraphicsProject1 from "@/components/GraphicsProject1";
+import GraphicsProject2 from "@/components/GraphicsProject2";
+import GraphicsProject3 from "@/components/GraphicsProject3";
+import AnimationAngular from "@/components/AnimationAngular";
+import AnimationCannon from "@/components/AnimationCannon";
+import AnimationDeformation from "@/components/AnimationDeformation";
+import AnimationProject2 from "@/components/AnimationProject2";
+import AnimationSpring from "@/components/AnimationSpring";
+import AnimationTrackBall from "@/components/AnimationTrackBall";
+import AnimationProject1 from "@/components/AnimationProject1";
 
-const components = { WasmComponent: WasmComponent, BanhMe: BanhMe };
+const components = { WasmComponent: WasmComponent, BanhMe: BanhMe, AnimationProject1: AnimationProject1, AnimationAngular:AnimationAngular, AnimationCannon:AnimationCannon, AnimationDeformation:AnimationDeformation, AnimationProject2:AnimationProject2, AnimationSpring:AnimationSpring, AnimationTrackBall:AnimationTrackBall,GraphicsProject1:GraphicsProject1,GraphicsProject2:GraphicsProject2, GraphicsProject3:GraphicsProject3, };
 
 
 const articleClasses = `

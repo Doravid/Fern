@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+
+// assume both position and normal are in homogeneous form
+
+attribute vec4 vPosition, vNormal, vFlatNormal;
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform vec4 lightPosition;  // eye coordinates
+uniform bool usePhongShading;
+varying vec3 L, N, V;
+
+//Gouraud
+void main()
+{
+    
+    gl_Position = projectionMatrix * modelViewMatrix * vPosition;
+    
+    if(usePhongShading){
+        vec4 nm = vNormal;
+        nm.w = 1.0;
+        vec3 pos = (modelViewMatrix * nm).xyz;
+        L = normalize(lightPosition.xyz - pos);
+        N = normalize(modelViewMatrix * vNormal).xyz;
+        V = normalize(-pos);
+        return;
+    }
+    vec4 nm = vFlatNormal;
+    nm.w = 1.0;
+    vec3 pos = (modelViewMatrix * nm).xyz;
+    L = normalize(lightPosition.xyz - pos);
+    N = normalize(modelViewMatrix * vFlatNormal).xyz;
+    V = normalize(-pos);
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+
+uniform vec4 lightDiffuse, lightSpecular, lightAmbient;
+uniform vec4 materialDiffuse, materialSpecular, materialAmbient;
+uniform float shininess;
+uniform bool isWireframe;
+
+varying vec3 L, N, V;
+
+
+//Phong
+void main()
+{
+    vec4 diffuse = lightDiffuse * materialDiffuse * dot(L, N);
+    //Specular
+    vec3 R = (2.0 * dot(L, N) * N) - L;
+    vec4 specular = lightSpecular * materialSpecular * pow(max(dot(V, R), 0.0), shininess);
+
+    //Ambient
+    vec4 ambient = lightAmbient * materialAmbient;
+
+
+	vec4 fColor = diffuse + specular + ambient; //vec4( 1.0, 0.0, 1.0, 1.0 );
+	fColor.a = 1.0;
+
+    if(isWireframe){
+        gl_FragColor = vec4( 1.0, 1.0, 1.0, 1.0 );//fColor;
+    }else{
+        gl_FragColor = fColor;
+
+    }
+
+}
+</script>
+<script id="fragment-shader-solid" type="x-shader/x-fragment">
+    precision mediump float;
+    void main()
+    {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0 );
+    }
+</script>
+<script id="vertex-shader-solid" type="x-shader/x-vertex">
+
+    // assume both position and normal are in homogeneous form
+    attribute vec4 vPosition;
+    uniform mat4 modelViewMatrix;
+    uniform mat4 projectionMatrix;
+    void main()
+    {
+        gl_Position = projectionMatrix * modelViewMatrix * vPosition;
+    }
+</script>
+
+
+<script type="text/javascript" src="lib/webgl-utils.js"></script>
+<script type="text/javascript" src="lib/initShaders.js"></script>
+
+<script type="text/javascript" src="lib/MV.js"></script>
+<script type="text/javascript" src="project2.js"></script>
+
+<body scroll="no" style="overflow: hidden">
+
+<canvas id="gl-canvas" width="1024" height="1024">
+Epic fail!
+</canvas>
+</body>
+</html>

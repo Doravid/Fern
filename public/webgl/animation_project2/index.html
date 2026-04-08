@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Bird</title>
+</head>
+<body>
+    <canvas id="gl-canvas" width="700" height="700">
+        Oops! Your browser doesn't support WebGL!
+    </canvas>
+    <form id="fileupload" enctype="multipart/form-data">
+        <input type="file" id="files" name="files[]" />
+      </form>
+    
+    <!-- Shaders -->
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 vPosition;
+        attribute vec4 vNormal;
+        attribute vec2 vTexCoord;
+
+        uniform mat4 modelViewMatrix;
+        uniform mat4 projectionMatrix;
+        uniform mat3 normalMatrix;
+
+        varying vec3 fNormal;
+        varying vec2 fTexCoord;
+        varying vec3 fPosition;
+
+        void main() {
+            // Transform vertex position into eye coordinates
+            vec4 positionInEye = modelViewMatrix * vPosition;
+            
+            // Transform normal into eye coordinates
+            fNormal = normalize(normalMatrix * vNormal.xyz);
+            
+            // Pass texture coordinates to fragment shader
+            fTexCoord = vTexCoord;
+            
+            // Pass position in eye coordinates to fragment shader
+            fPosition = positionInEye.xyz;
+            // Transform vertex position with projection matrix
+            gl_Position = projectionMatrix * positionInEye;
+        }
+    </script>
+    
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+
+        varying vec3 fNormal;
+        varying vec2 fTexCoord;
+        varying vec3 fPosition;
+
+        uniform bool uUseTexture;
+        uniform sampler2D uTexture;
+        uniform vec4 uDiffuse;
+        uniform vec4 uSpecular;
+        uniform vec4 uLightPosition;
+        uniform vec4 uAmbient;
+
+
+        void main() {
+            // Normalize again as interpolation may have denormalized
+            vec3 normal = normalize(fNormal);
+            
+            // Calculate light direction in eye coordinates
+            vec3 lightDirection = normalize(uLightPosition.xyz - fPosition);
+            
+            // Calculate diffuse lighting component
+            float diffuseComponent = max(dot(normal, lightDirection), 0.0);
+            
+            // Calculate final color with simple lighting
+            vec4 ambient = uAmbient * uDiffuse;
+            vec4 diffuse = diffuseComponent * uDiffuse;
+            gl_FragColor = ambient + diffuse;
+        }
+    </script>
+    
+    
+    <script type="text/javascript" src="lib/webgl-utils.js"></script>
+    <script type="text/javascript" src="lib/initShaders.js"></script>
+    <script type="text/javascript" src="lib/MV.js"></script>
+
+    <script type="text/javascript" src="lib/model.js"></script>
+    <script type="text/javascript" src="lib/face.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+</body>
+</html>

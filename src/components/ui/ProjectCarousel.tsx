@@ -29,7 +29,7 @@ const projects = [
       "PMKS+ Educational project I worked on. Simulates four-bar linkages.",
   },
   {
-    href: "https://www.dev-fern.com/",
+    href: "https://www.ferns.fyi/",
     imageUrl: "Wallpaper.webp",
     caption: "I also Like 3D Modeling!",
   },

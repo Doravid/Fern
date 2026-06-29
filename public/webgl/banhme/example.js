@@ -113,33 +113,33 @@ window.onload = function init() {
   }
   playerTextureFront = loadTexture(
     gl,
-    "https://www.dev-fern.com/character.png"
+    "https://www.ferns.fyi/character.png"
   );
   playerTextureBack = loadTexture(
     gl,
-    "https://www.dev-fern.com/character_back.png"
+    "https://www.ferns.fyi/character_back.png"
   );
   playerTextureLeft = loadTexture(
     gl,
-    "https://www.dev-fern.com/character_left.png"
+    "https://www.ferns.fyi/character_left.png"
   );
   playerTextureRight = loadTexture(
     gl,
-    "https://www.dev-fern.com/character_right.png"
+    "https://www.ferns.fyi/character_right.png"
   );
   playerTexture = playerTextureFront;
 
   itemOneTexture = loadTexture(
     gl,
-    "https://www.dev-fern.com/character_right.png"
+    "https://www.ferns.fyi/character_right.png"
   );
   itemTwoTexture = loadTexture(
     gl,
-    "https://www.dev-fern.com/character_right.png"
+    "https://www.ferns.fyi/character_right.png"
   );
   itemThreeTexture = loadTexture(
     gl,
-    "https://www.dev-fern.com/character_right.png"
+    "https://www.ferns.fyi/character_right.png"
   );
 
   dialogElement = document.querySelector("#dialog");

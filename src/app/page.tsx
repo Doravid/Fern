@@ -108,7 +108,6 @@ export default function Home() {
               </div>
             ) : (
               <Particles />
-              
             )}
           </div>
           <div className="flex-1 w-full aspect-square min-[1700px]:aspect-auto min-[1700px]:min-h-0 flex items-center justify-center">
@@ -126,7 +125,7 @@ export default function Home() {
       <Card className="flex flex-row items-center justify-center gap-4 p-4 mt-4 bg-[#ff7a05]">
         <a
           className="flex items-center gap-2 hover:underline hover:underline-offset-4 text-sm"
-          href="https://www.dev-fern.com/"
+          href="https://www.ferns.fyi/"
           target="_blank"
           rel="noopener noreferrer"
         >

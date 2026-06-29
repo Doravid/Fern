@@ -69,9 +69,9 @@ let wordLists = [
   ],
 ];
 let items = [
-  new Item("https://www.dev-fern.com/mot.png", vec2(-0.6, 0.1)),
-  new Item("https://www.dev-fern.com/hai.png", vec2(-0.6, -0.2)),
-  new Item("https://www.dev-fern.com/ba.png", vec2(-0.6, -0.5)),
+  new Item("https://www.ferns.fyi/mot.png", vec2(-0.6, 0.1)),
+  new Item("https://www.ferns.fyi/hai.png", vec2(-0.6, -0.2)),
+  new Item("https://www.ferns.fyi/ba.png", vec2(-0.6, -0.5)),
 ];
 
 let dialogues = [
@@ -116,42 +116,42 @@ function loadLevels() {
   const steve = new Npc(
     dialogues[0],
     0,
-    "https://www.dev-fern.com/character.png",
+    "https://www.ferns.fyi/character.png",
     vec2(-0.5, 0),
     "steve"
   );
   const jeff = new Npc(
     dialogues[3],
     0,
-    "https://www.dev-fern.com/npc3.png",
+    "https://www.ferns.fyi/npc3.png",
     vec2(0.5, 0.5),
     "jeff"
   );
   const numberGuy = new Npc(
     dialogues[2],
     0,
-    "https://www.dev-fern.com/npc.png",
+    "https://www.ferns.fyi/npc.png",
     vec2(0.4, -0.5),
     "number"
   );
   const waterGuy = new Npc(
     dialogues[4],
     0,
-    "https://www.dev-fern.com/npc5.png",
+    "https://www.ferns.fyi/npc5.png",
     vec2(0.4, -0.5),
     "water"
   );
   const girl = new Npc(
     dialogues[1],
     0,
-    "https://www.dev-fern.com/npc4.png",
+    "https://www.ferns.fyi/npc4.png",
     vec2(0.4, 0.5),
     "emma"
   );
   const me = new Npc(
     ["Hi", "Chào Bạn, tôi là David"],
     0,
-    "https://www.dev-fern.com/me.png",
+    "https://www.ferns.fyi/me.png",
     vec2(0.57, 0.4),
     "emma"
   );
@@ -159,7 +159,7 @@ function loadLevels() {
   levels.push(
     new Level(
       [steve, girl, me],
-      "https://www.dev-fern.com/Untitled.png",
+      "https://www.ferns.fyi/Untitled.png",
       new Connections(1, -1, -1, -1),
       wordLists[0]
     )
@@ -168,7 +168,7 @@ function loadLevels() {
   levels.push(
     new Level(
       [jeff, numberGuy],
-      "https://www.dev-fern.com/map2.png",
+      "https://www.ferns.fyi/map2.png",
       new Connections(-1, 0, -1, 2),
       wordLists[1]
     )
@@ -176,7 +176,7 @@ function loadLevels() {
   levels.push(
     new Level(
       [waterGuy],
-      "https://www.dev-fern.com/map3.png",
+      "https://www.ferns.fyi/map3.png",
       new Connections(-1, -1, 1, -1),
       wordLists[2]
     )
